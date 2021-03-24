@@ -1,4 +1,3 @@
-
 # CShargs (🌊🦈) argument parser
 - Easy to use declarative argument parser.
 - Define a class representing the arguments object. 🌊🦈 will populate this object with data from the command line.
@@ -9,7 +8,7 @@
 - Parameters of an option are specified in attribute constructor.
 - Then create an instance of this object and pass command line arguments to it when you want to parse them.
 
-``` CSharp
+```csharp
 class MyCommandArguments : CShargs.Parser {
     // ... options go here
 }
@@ -25,7 +24,7 @@ static void Main(string[] argv) {
 - For option name, use the first constructor argument `name`
 - For alias, use the named argument `alias`
 - For help description, use the named argument `help`
-``` CSharp
+```csharp
     [FlagOption("silent", alias: "s", help: "No output will be produced to stdout.")]
     bool Silent { get; set; }
     // set to true when `-s` or `--silent` is used
@@ -35,7 +34,7 @@ static void Main(string[] argv) {
 
 ## Value option ( `--key Value` / `--key=Value` / `-k Value` / `-kValue` )
 - Value option attribute is used for options with parameters, eg
-``` CSharp
+```csharp
     [ValueOption("number-of-cats", alias: "c", required: false)]
     int Cats { get; set; } = 12;
     // set with --number-of-cats=123 / --number-of-cats 123 / -c 123 / -c123
@@ -47,7 +46,7 @@ static void Main(string[] argv) {
 
 ## Verb option ( `git push` )
 - VerbOption attribute is used for subcommands
-``` CSharp
+```csharp
     [VerbOption("push")]
     PushArguments Push { get; set; }
     //
@@ -72,7 +71,7 @@ class PushArguments : Parser {
     - one of the C# primitives (`int`, `string`, `bool`, `short`, `long`, etc.)
     - an enum.
     - any user defined type `T`, which provides static method
-```CSharp
+```csharp
         public static T Parse(string str);
 ```
 
@@ -96,7 +95,7 @@ class PushArguments : Parser {
 - write `time` command example
 
 
-``` CSharp
+```csharp
     [ValueOption("number-of-cats", alias:"c", required:false)]
     int Cats { get; set; }
 // --number-of-cats      .... defaults to 0
