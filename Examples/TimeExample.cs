@@ -27,10 +27,15 @@ namespace CShargs.Examples
      */
     
 
-    [ParserSettings()]
-    class TimeArguments : Parser {
-
-        [FlagOption("p", alias: "portability", help: "Use the portable output format.")]
+    // limits syntax of value options - only space for short options and equal sign for long eg. -f FORMAT, --format=FORMAT
+    // all other settings are left at default
+    [ParserSettings(OptionSettings.ForbidShortEquals | OptionSettings.ForbidShortEquals)]
+    class TimeArguments : Parser 
+    {
+           // options without parameters - flags
+           // their type must be bool - meaning: present x not present in args
+           
+           [FlagOption("p", alias: "portability", help: "Use the portable output format.")]
         public bool Portable { get; set; }
         
         [FlagOption("a", alias: "append", help: "(Used together with -o.) Do not overwrite but append.")]
@@ -42,6 +47,9 @@ namespace CShargs.Examples
         [FlagOption("V", alias:"verison", help:"Print version information on standard output, then exit successfully.")]
         public bool Version { get; set; }
 
+        // options with parameters - value options
+        // type according to option parameter type
+        
         [ValueOption("f", alias: "format", required: false, help: "Specify output format, possibly overriding the format specified in the environment variable TIME.")]
         public string Format { get; set; }
         
