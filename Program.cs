@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace CShargs {
@@ -16,7 +17,7 @@ namespace CShargs {
 
             arguments.GenerateHelp(Console.Out); // generate structured help, write it to console
 
-            string[] plainArgs = arguments.PlainArgs;   // get parsed plain arguments
+            var plainArgs = arguments.PlainArgs;   // get parsed plain arguments
 
         }
     }

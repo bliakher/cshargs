@@ -1,10 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CShargs
 {
-
     abstract class Parser
     {
         public void Parse(string[] args)
@@ -34,6 +36,9 @@ namespace CShargs
 
         public IReadOnlyList<string> PlainArgs { get; set; }
 
+        /// <summary>
+        /// Count of <see cref="Parser.PlainArgs"/> will be checked against this at the end of the parsing.
+        /// </summary>
         protected virtual int PlainArgsRequired => PlainArgs.Count;
 
         /// <summary>
@@ -62,40 +67,4 @@ namespace CShargs
             return false;
         }
     }
-
-    class FlagOptionAttribute : Attribute
-    {
-        public FlagOptionAttribute(
-            string name,
-            string alias = null,
-            string help = null)
-        { }
-    }
-
-    class ValueOptionAttribute : Attribute
-    {
-
-        public ValueOptionAttribute(
-            string name,
-            bool required,
-            string alias = null,
-            string help = null)
-        { }
-
-        public ValueOptionAttribute(
-            string name,
-            string alias = null,
-            string help = null)
-        { }
-    }
-
-    class VerbOptionAttribute : Attribute
-    {
-        public VerbOptionAttribute(
-            string name,
-            string help = null
-        )
-        { }
-    }
-
 }

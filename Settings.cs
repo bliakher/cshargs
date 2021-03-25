@@ -6,9 +6,16 @@ using System.Threading.Tasks;
 
 namespace CShargs {
 
+    /// <summary>
+    /// Enumeration of different option
+    /// </summary>
+
     [Flags]
     enum OptionSettings {
 
+        /// <summary>
+        /// Case sensitive, all syntax variants allowed.
+        /// </summary>
         Default = 0,
 
         /// <summary>
@@ -27,34 +34,47 @@ namespace CShargs {
         LongCaseInsensitive = 1 << 2,
 
         /// <summary>
-        /// If present, <code>-o=5</code> will assign value "5" to the option property.
-        /// Otherwise the value "=5" might be considered.
+        /// If present, <code>-o=5</code> will not be recognised as valid syntax.
+        /// Note: depending on the bit <see cref="ForbidShortNospace"/> value "=5" might be considered.
         /// </summary>
-        ShortAllowEquals = 1 << 3,
+        ForbidShortEquals = 1 << 3,
 
         /// <summary>
-        /// If present, <code>-o 5</code> will assign value "5" to 
+        /// If present, <code>-o 5</code> will not be recognised as valid syntax.
         /// </summary>
-        ShortAllowSpace = 1 << 4,
+        ForbidShortSpace = 1 << 4,
 
-        ShortAllowNospace = 1 << 5,
+        /// <summary>
+        /// If present, <code>-o5</code> will not be recognised as valid syntax.
+        /// </summary>
+        ForbidShortNospace = 1 << 5,
 
         /// <summary>
         /// If not present, <code>--option=value</code> will not be recognised as valid syntax.
         /// </summary>
-        LongAllowEquals = 1 << 6,
+        ForbidLongEquals = 1 << 6,
 
         /// <summary>
         /// If not present, <code>--option value</code> will not be recognised as valid syntax.
         /// </summary>
-        LongAllowSpace = 1 << 7,
+        ForbidLongSpace = 1 << 7,
 
     }
 
+    enum ParserSettings
+    {
+        Default = 0,
+    }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     class ParserSettingsAttribute : Attribute {
 
         public ParserSettingsAttribute(
-            OptionSettings optionSettings = OptionSettings.Default
+            OptionSettings optionSettings = OptionSettings.Default,
+            ParserSettings parserSettings = ParserSettings.Default,
+            string flagOptionSymbol = "-",
+            string valueOptionSymbol = "--",
+            string equalsSymbol = "="
             ) { }
     }
 }

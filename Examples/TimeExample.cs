@@ -27,7 +27,7 @@ namespace CShargs.Examples
      */
     
 
-    [ParserSettings(ParserSettings.LONG_USE_EQUAL | ParserSettings.ALLOW_MERGE)]
+    [ParserSettings()]
     class TimeArguments : Parser {
 
         [FlagOption("p", alias: "portability", help: "Use the portable output format.")]
