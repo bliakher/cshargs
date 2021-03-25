@@ -2,14 +2,14 @@ using System;
 
 namespace CShargs.Examples
 {
-    //[AliasOption("v", equivalentTo="Ut")]
+
     class GitArguments : Parser {
 
-        [FlagOption("version")]
-        bool showVersion;
+        [FlagOption("version")] 
+        private bool showVersion { get; set; }
 
         [VerbOption("push")]
-        GitPushArguments pushArguments;
+        private GitPushArguments pushArguments { get; set; }
     }
 
     class GitPushArguments : Parser {
