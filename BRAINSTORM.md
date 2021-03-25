@@ -8,7 +8,7 @@
 - Parameters of an option are specified in attribute constructor.
 - Then create an instance of this object and pass command line arguments to it when you want to parse them.
 
-```csharp
+```c#
 class MyCommandArguments : CShargs.Parser {
     // ... options go here
 }
@@ -24,7 +24,7 @@ static void Main(string[] argv) {
 - For option name, use the first constructor argument `name`
 - For alias, use the named argument `alias`
 - For help description, use the named argument `help`
-```csharp
+```c#
     [FlagOption("silent", alias: "s", help: "No output will be produced to stdout.")]
     bool Silent { get; set; }
     // set to true when `-s` or `--silent` is used
@@ -34,7 +34,7 @@ static void Main(string[] argv) {
 
 ## Value option ( `--key Value` / `--key=Value` / `-k Value` / `-kValue` )
 - Value option attribute is used for options with parameters, eg
-```csharp
+```c#
     [ValueOption("number-of-cats", alias: "c", required: false)]
     int Cats { get; set; } = 12;
     // set with --number-of-cats=123 / --number-of-cats 123 / -c 123 / -c123
@@ -46,7 +46,7 @@ static void Main(string[] argv) {
 
 ## Verb option ( `git push` )
 - VerbOption attribute is used for subcommands
-```csharp
+```c#
     [VerbOption("push")]
     PushArguments Push { get; set; }
     //
@@ -71,7 +71,7 @@ class PushArguments : Parser {
     - one of the C# primitives (`int`, `string`, `bool`, `short`, `long`, etc.)
     - an enum.
     - any user defined type `T`, which provides static method
-```csharp
+```c#
         public static T Parse(string str);
 ```
 
@@ -88,14 +88,14 @@ class PushArguments : Parser {
 - default values ? yes, not nullable, but required:false
 
 ## ToDo:
-- Parser class
-- Option attriubute classes
-- ParserSettings attribute
++ Parser class
++ Option attribute classes
++ ParserSettings attribute
 - global settings attributes - synonyms etc
-- write `time` command example
++ write `time` command example
 
 
-```csharp
+```c#
     [ValueOption("number-of-cats", alias:"c", required:false)]
     int Cats { get; set; }
 // --number-of-cats      .... defaults to 0

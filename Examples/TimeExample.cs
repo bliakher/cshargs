@@ -27,7 +27,7 @@ namespace CShargs.Examples
      */
     
 
-    [ParserSettings1(ParserConst.LONG_USE_EQUAL | ParserConst.ALLOW_MERGE)]
+    [ParserSettings(ParserSettings.LONG_USE_EQUAL | ParserSettings.ALLOW_MERGE)]
     class TimeArguments : Parser {
 
         [FlagOption("p", alias: "portability", help: "Use the portable output format.")]
@@ -49,25 +49,4 @@ namespace CShargs.Examples
         public string OutputFile { get; set; }
 
     }
-
-    static class ParserConst
-    {
-        // now: space is default, equal sign can be set in settings
-        //      separately for short and long options
-        
-        public const int SHORT_USE_EQUAL = 1;
-        public const int LONG_USE_EQUAL = 2;
-        public const int ALLOW_MERGE = 4;
-    }
-    
-    class ParserSettings1Attribute : Attribute
-    {
-
-        public ParserSettings1Attribute(int settingsFilter)
-        {
-            
-        }
-    }
-
-
 }
