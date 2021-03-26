@@ -9,22 +9,15 @@ namespace CShargs
 {
     abstract class Parser
     {
-        public void Parse(string[] args)
-        {
-            int cursor = 0;
+        public Parser(
+            OptionSettings optionSettings = OptionSettings.Default,
+            string flagOptionSymbol = "-",
+            string valueOptionSymbol = "--",
+            string equalsSymbol = "="
+            ) { }
 
-            while (cursor < args.Length) {
-
-                if (skip > 0) {
-                    skip--;
-                    cursor++;
-                    continue;
-                }
-
-                // do parsing
-                cursor++;
-            }
-        }
+        public Parser() { }
+        public void Parse(string[] args) { }
 
         public string GenerateHelp()
         {
@@ -35,6 +28,7 @@ namespace CShargs
         public void GenerateHelp(TextWriter output) { }
 
         public IReadOnlyList<string> PlainArgs { get; set; }
+
 
         /// <summary>
         /// Count of <see cref="Parser.PlainArgs"/> will be checked against this at the end of the parsing.

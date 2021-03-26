@@ -60,22 +60,5 @@ namespace CShargs {
         ForbidLongSpace = 1 << 7,
 
     }
-
-    enum ParserSettings
-    {
-        Default = 0,
-    }
-
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    class ParserSettingsAttribute : Attribute {
-
-        public ParserSettingsAttribute(
-            OptionSettings optionSettings = OptionSettings.Default,
-            ParserSettings parserSettings = ParserSettings.Default,
-            string flagOptionSymbol = "-",
-            string valueOptionSymbol = "--",
-            string equalsSymbol = "="
-            ) { }
-    }
 }
 

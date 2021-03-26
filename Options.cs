@@ -10,6 +10,7 @@ namespace CShargs
         public FlagOptionAttribute(
             string name,
             string alias = null,
+            string useWith = null,
             string help = null)
         { }
     }
@@ -21,12 +22,14 @@ namespace CShargs
             string name,
             bool required,
             string alias = null,
+            string useWith = null,
             string help = null)
         { }
 
         public ValueOptionAttribute(
             string name,
             string alias = null,
+            string useWith = null,
             string help = null)
         { }
     }
@@ -45,7 +48,25 @@ namespace CShargs
     {
         public AliasOptionAttribute(
           string name,
-          string aliasOf)
+          string[] aliasOf)
+        { }
+
+        public AliasOptionAttribute(
+          string name,
+          string aliasOf) : this(name, new string[] { aliasOf })
+        { }
+    }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+    class CustomOptionAttribute : Attribute
+    {
+        public CustomOptionAttribute(
+            string name,
+            bool required,
+            Action<string> callback,
+            string alias = null,
+            string useWith = null,
+            string help = null)
         { }
     }
 

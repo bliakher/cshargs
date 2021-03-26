@@ -74,7 +74,6 @@ class PushArguments : Parser {
   - aggregating short options ie. -abc / -a -b -c
   - syntax of option parameters ie. -c 123 / -c123 / -c=123
   - case sensitivity
-- parser settings
 - choosing symbols to denote short and long options and delimiter
 
 ## Aliases for options
@@ -92,7 +91,7 @@ class PushArguments : Parser {
 + Parser class
 + Option attribute classes
 + ParserSettings attribute
-- global settings attributes - synonyms etc
++ global settings attributes - synonyms etc
 + write `time` command example
 
 

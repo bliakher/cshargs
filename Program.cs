@@ -8,16 +8,18 @@ namespace CShargs {
         static void Main(string[] args) {
 
             var arguments = new Examples.TimeArguments();
-            arguments.Parse(args); // parse args, populate TimeArguments instance with options from args
+            arguments.Parse(args);
 
-            if (arguments.Version)  // check version option
-            {
+            // check version option
+            if (arguments.Version) {
                 Console.WriteLine("Version option present.");
             }
 
-            arguments.GenerateHelp(Console.Out); // generate structured help, write it to console
+            // generate structured help, write it to console
+            arguments.GenerateHelp(Console.Out); 
 
-            var plainArgs = arguments.PlainArgs;   // get parsed plain arguments
+            // get parsed plain arguments
+            var plainArgs = arguments.PlainArgs;
 
         }
     }
