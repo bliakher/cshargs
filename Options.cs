@@ -70,4 +70,11 @@ namespace CShargs
         { }
     }
 
+    class OptionGroupAttribute : Attribute
+    {
+        public OptionGroupAttribute(
+            params string[] optionGroup)
+        {}
+    }
+
 }
