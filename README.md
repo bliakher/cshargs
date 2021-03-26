@@ -39,6 +39,7 @@ static void Main(string[] argv) {
 - Flag option is used for options without parameters
 - For option name, use the first constructor argument `name`
 - For alias, use the named argument `alias`
+- For option that can be used only with some other option use the named argument `useWith` which takes the option property name.
 - For help description, use the named argument `help`
 ```c#
     [FlagOption("silent", alias: "s", help: "No output will be produced to stdout.")]
@@ -59,7 +60,9 @@ Value option has `required` argument. Use this to tell the parser to automatical
 - If `required` not specified, it is inferred from the nullability of the used type. (nullable &equiv; required)
 - If `required: false`, the default value of the property is used.
 - If `required: true`, missing option throws an exception.
-
+- For alias, use the named argument `alias`
+- For option that can be used only with some other option use the named argument `useWith` which takes the option property name.
+- For help description, use the named argument `help`
 Types of option properties must be either:
   - one of the C# primitives (`int`, `string`, `bool`, `short`, `long`, etc.)
   - an enum.
