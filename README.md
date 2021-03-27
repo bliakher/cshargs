@@ -1,6 +1,9 @@
-# CShargs `🌊🦈` argument parser
-- Easy to use declarative argument parser.
-- Define a class representing the arguments object. 🌊🦈 will populate this object with data from the command line.
+
+# `🌊🦈` CShargs argument parser
+
+(Hopefully) easy to use declarative argument parser.
+
+Define a class representing the arguments object. 🌊🦈 will populate this object with data from the command line.
 
 **Table of contents:**
 [ToC]
@@ -36,7 +39,7 @@ static void Main(string[] argv) {
 # Features
 
 ## Flag option ( `--flag` / `-f` )
-- Flag option is used for options without parameters
+Flag option attribute is used for options without parameters. The type of the property must be bool.
 - For option name, use the first constructor argument `name`
 - For alias, use the named argument `alias`
 - For option that can be used only with some other option use the named argument `useWith` which takes the option property name.
@@ -49,7 +52,10 @@ static void Main(string[] argv) {
 
 
 ## Value option ( `--key=Value` / `-k Value` / `-kValue` )
-Value option attribute is used for options with parameters, eg.
+Value option attribute is used for options with parameters, eg. Type of the option property must be either:
+  - one of the C# primitives (`int`, `string`, `bool`, `short`, `long`, etc.)
+  - an enum.
+  - any user defined type `T`, which provides static method `T Parse(string str);`
 ```c#
     [ValueOption("number-of-cats", alias: "c", required: false)]
     int Cats { get; set; } = 12;
@@ -61,17 +67,14 @@ Value option has `required` argument. Use this to tell the parser to automatical
 - If `required: false`, the default value of the property is used.
 - If `required: true`, missing option throws an exception.
 - For alias, use the named argument `alias`
-- For option that can be used only with some other option use the named argument `useWith` which takes the option property name.
+- For option that can be used only with some other option use the named (see [Option dependencies]())
 - For help description, use the named argument `help`
-Types of option properties must be either:
-  - one of the C# primitives (`int`, `string`, `bool`, `short`, `long`, etc.)
-  - an enum.
-  - any user defined type `T`, which provides static method `T Parse(string str);`
+
 
 
 
 ## Verb option ( `git push` )
-- Verb option attribute is used for subcommands
+Verb option attribute is used for subcommands. In this case, type of the option property must be a child of the `Parser` class.
 ```c#
 class GitArguments : Parser {
     [VerbOption("push")]
@@ -121,7 +124,7 @@ Keep in mind, that the parser class can be annotated with multiple `AliasOption`
 If you want to force the user to select one of a list of options, use `OptionGroup` attribute. Again, use property names to reference other options.
 
 ```c#
-[OptionGroup(nameof(Recursive), nameof(Force))]
+[OptionGroup(nameof(Words), nameof(Lines))]
 class CountArguments : Parser {
 
     [FlagOption("w", alias:"words")]
@@ -134,6 +137,24 @@ class CountArguments : Parser {
 }
 ```
 
+
+## Option dependencies
+
+You can specify that some opitons are available only when other options are present. Use the `useWith` argument in your option attribute which takes the option property name.
+
+```c#
+class MyArguments : Parser {
+
+    [FlagOption("p", alias:"print", help: "Print out progress")]
+    bool Print { get; set; }
+    
+    [FlagOption("v", alias:"verbose", help: "Print more details", useWith: nameof(Print))]
+    bool Verbose { get; set; }
+    
+    // if -v is used without -p parameter, an exception is thrown
+}
+```
+
 ## Callbacks
 
 If you need The parser base class provides you with virtual methods, which you can override to execute your code on various events.
@@ -141,4 +162,4 @@ If you need The parser base class provides you with virtual methods, which you c
 | Method name      | Called... |
 |------------------|-----------|
 | `OnFinish()`     | when the parser has finished without an error. |
-| `OnError(ref bool suppress)` | when the parser is going to throw an exception. Handling exceptions is expensive, so you can set `suppress=true` to handle the error even before any exception is thrown |
+| `OnUnknownParameter(string p)`     | when the parser has encountered an unknown parameter. Before the parser throws an exception, you can decide whether the syntax is really wrong Return `false` to indicate error. |

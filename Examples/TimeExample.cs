@@ -28,7 +28,7 @@ namespace CShargs.Examples
  */
     
     // sets one alias -u for -p -v
-    [AliasOption("u", aliasOf: new[] { nameof(Portable), nameof(Verbose) } )]
+    [AliasOption("u", nameof(Portable), nameof(Verbose))]
     class TimeArguments : Parser 
     {
         // limits syntax of value options - only space for short options and equal sign for long eg. -f FORMAT, --format=FORMAT

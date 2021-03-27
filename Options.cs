@@ -47,23 +47,17 @@ namespace CShargs
     class AliasOptionAttribute : Attribute
     {
         public AliasOptionAttribute(
-          string name,
-          string[] aliasOf)
-        { }
-
-        public AliasOptionAttribute(
-          string name,
-          string aliasOf) : this(name, new string[] { aliasOf })
+            string name,
+            params string[] aliasOf)
         { }
     }
 
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     class CustomOptionAttribute : Attribute
     {
         public CustomOptionAttribute(
             string name,
             bool required,
-            Action<string> callback,
             string alias = null,
             string useWith = null,
             string help = null)
@@ -74,7 +68,7 @@ namespace CShargs
     {
         public OptionGroupAttribute(
             params string[] optionGroup)
-        {}
+        { }
     }
 
 }
