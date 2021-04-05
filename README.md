@@ -11,7 +11,8 @@
 Define a class representing the arguments object. 🌊🦈 will populate this object with data from the command line.
 
 **Table of contents:**
-[ToC]
+
+[[_TOC_]]
 
 
 
