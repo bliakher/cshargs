@@ -1,3 +1,8 @@
+# TODOs:
+
+- v README chybí zmínka o CustomPropertyAttribute
+- u OptionGroup umožnit nepovinou grupu
+
 
 # `🌊🦈` CShargs argument parser
 
@@ -31,7 +36,7 @@ static void Main(string[] argv) {
 - Parsed options and their parameters will be filled in the fields of the class instance.
 - Plain arguments can be found in PlainArgs property as a list of strings.
 
-## General remarks 
+## General remarks
 - To use option attributes, the member of your class must be a property.
 - There can be only one option attribute for one property.
 
@@ -108,16 +113,16 @@ In addition to that you can set more aliases using `AliasOptionAttribute`, like 
 class MyArguments : Parser {
     [FlagOption("r", alias:"recursive")]
     bool Recursive { get; set; }
-    
+
     [FlagOption("f", alias:"force")]
     bool Force { get; set; }
-    
+
     // option -a is now equivalent to -rf and -Rf
 }
 ```
 You have to use property names of the aliased options. If you wont use them, you will get an exception on static initialization.
 
-Keep in mind, that the parser class can be annotated with multiple `AliasOption` attributes. Also, you can create aliases for multiple options. 
+Keep in mind, that the parser class can be annotated with multiple `AliasOption` attributes. Also, you can create aliases for multiple options.
 
 ## Option groups
 
@@ -129,10 +134,10 @@ class CountArguments : Parser {
 
     [FlagOption("w", alias:"words")]
     bool Words { get; set; }
-    
+
     [FlagOption("l", alias:"lines")]
     bool Lines { get; set; }
-    
+
     // the user must now decide, whether they want to count words or lines
 }
 ```
@@ -147,10 +152,10 @@ class MyArguments : Parser {
 
     [FlagOption("p", alias:"print", help: "Print out progress")]
     bool Print { get; set; }
-    
+
     [FlagOption("v", alias:"verbose", help: "Print more details", useWith: nameof(Print))]
     bool Verbose { get; set; }
-    
+
     // if -v is used without -p parameter, an exception is thrown
 }
 ```
@@ -163,3 +168,5 @@ If you need The parser base class provides you with virtual methods, which you c
 |------------------|-----------|
 | `OnFinish()`     | when the parser has finished without an error. |
 | `OnUnknownParameter(string p)`     | when the parser has encountered an unknown parameter. Before the parser throws an exception, you can decide whether the syntax is really wrong Return `false` to indicate error. |
+
+
