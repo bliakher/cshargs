@@ -64,9 +64,11 @@ namespace CShargs
         { }
     }
 
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     class OptionGroupAttribute : Attribute
     {
         public OptionGroupAttribute(
+            bool required,
             params string[] optionGroup)
         { }
     }

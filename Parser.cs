@@ -17,6 +17,12 @@ namespace CShargs
             ) { }
 
         public Parser() { }
+
+        /// <summary>
+        /// Do the actual parsing.
+        ///
+        /// If parsing fails, <see cref="" />
+        /// </summary>
         public void Parse(string[] args) { }
 
         public string GenerateHelp()
