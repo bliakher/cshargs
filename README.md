@@ -6,9 +6,9 @@
     - popsat výjimky, hlavně jak řízeně spadnout
         - tj. sekce error handling
     - ujasnit Nullable optiony
-- u OptionGroup umožnit nepovinou grupu
++ u OptionGroup umožnit nepovinou grupu
 - předělat virtuální callbacky na eventy
-- přidat výjimky
++ přidat výjimky
 - přesunout OptionGroup do future? (s13)
 
 
@@ -154,7 +154,7 @@ class CountArguments : Parser {
 
 ## Option dependencies
 
-You can specify that some opitons are available only when other options are present. Use the `useWith` argument in your option attribute which takes the option property name.
+You can specify that some options are available only when other options are present. Use the `useWith` argument in your option attribute which takes the option property name.
 
 ```c#
 class MyArguments : Parser {
