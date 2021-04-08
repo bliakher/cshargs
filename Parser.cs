@@ -38,7 +38,6 @@ namespace CShargs
         /// <summary>
         /// The parser will skip next n arguments.
         /// </summary>
-        /// <param name="n"></param>
         protected int Skip {
             get => skip;
             set {
@@ -49,16 +48,6 @@ namespace CShargs
         }
 
         private int skip;
-
-        /// <summary>
-        /// Called by the parser when an unknown parameter is encountered.
-        /// User handles this state, and returns whether the handling was sucessfull.
-        /// </summary>
-        /// <param name="param"></param>
-        /// <returns>If false returned, the parser will go to error state.</returns>
-        protected virtual bool OnUnknownParameter(string param)
-        {
-            return false;
-        }
+        
     }
 }
