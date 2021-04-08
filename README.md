@@ -1,7 +1,15 @@
 # TODOs:
 
-- v README chybí zmínka o CustomPropertyAttribute
+- README
+    - chybí zmínka o CustomPropertyAttribute
+    - chybí Skip, PlainArgsRequired (s13)
+    - popsat výjimky, hlavně jak řízeně spadnout
+        - tj. sekce error handling
+    - ujasnit Nullable optiony
 - u OptionGroup umožnit nepovinou grupu
+- předělat virtuální callbacky na eventy
+- přidat výjimky
+- přesunout OptionGroup do future? (s13)
 
 
 # `🌊🦈` CShargs argument parser
