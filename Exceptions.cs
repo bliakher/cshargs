@@ -6,7 +6,7 @@ namespace CShargs {
     /// <summary>
     /// Thrown during initialization when there is an error in parser configuration.
     /// </summary>
-    internal class ConfigurationException : Exception {
+    public class ConfigurationException : Exception {
         internal ConfigurationException(string message, Exception innerException = null)
             : base(message, innerException) { }
     }
@@ -47,6 +47,11 @@ namespace CShargs {
     public class MissingOptionException : OptionException {
         internal MissingOptionException(string optionName, Exception innerException = null)
             : base(optionName, $"Required option '{optionName}' is missing.", innerException) { }
+    }
+
+    public class PlainArgsCountException : ParsingException {
+        internal PlainArgsCountException(string message, Exception inner)
+            : base (message, inner) { }
     }
 
     /// <summary>

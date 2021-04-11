@@ -41,6 +41,7 @@ namespace CShargs
         /// </summary>
         protected virtual int PlainArgsRequired => PlainArgs.Count;
 
+        private int skip;
         /// <summary>
         /// The parser will skip next n arguments.
         /// </summary>
@@ -53,7 +54,11 @@ namespace CShargs
             }
         }
 
-        private int skip;
-        
+        /// <summary>
+        /// View on the raw arguments array starting at the currently parsed argument
+        /// </summary>
+        protected ArraySegment<string> Arguments => throw new NotImplementedException();
+
+
     }
 }
