@@ -9,7 +9,7 @@ namespace CShargs
     {
         public FlagOptionAttribute(
             string name,
-            string alias = null,
+            char shortName = '\0',
             string useWith = null,
             string help = null)
         { }
@@ -21,14 +21,14 @@ namespace CShargs
         public ValueOptionAttribute(
             string name,
             bool required,
-            string alias = null,
+            char shortName = '\0',
             string useWith = null,
             string help = null)
         { }
 
         public ValueOptionAttribute(
             string name,
-            string alias = null,
+            char shortName = '\0',
             string useWith = null,
             string help = null)
         { }
@@ -58,7 +58,7 @@ namespace CShargs
         public CustomOptionAttribute(
             string name,
             bool required,
-            string alias = null,
+            char shortName = '\0',
             string useWith = null,
             string help = null)
         { }
