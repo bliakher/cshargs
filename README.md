@@ -1,4 +1,3 @@
-
 # `🌊🦈` CShargs argument parser
 
 (Hopefully) easy to use declarative argument parser.
@@ -101,8 +100,11 @@ class GitPushArguments : Parser {
 
 If you need an option that needs some context during its own parsing, or you need to interpret the raw arguments in sligtly different way, you can use the `CustomOption` attribute on a method. The signature of the method should be `void MyMethod(string value)`.
 
+If the custom parameter has a value attached to it (like this: `--param=value`), it is given via the `string value` parameter of the method. Otherwise the parameter is `null`.
+
 ```c#
 // example: --pos <x> <y> <z>
+// note: here we assume that "=" in value options are disabled via OptionSettings.ForbidLongEquals
 class VectorArguments : Parser {
     Vector3 position;
     [CustomOption("pos", true, help: "Position of the item.")]
@@ -110,6 +112,8 @@ class VectorArguments : Parser {
         if (Arguments.Count <= 3) {
             throw new FormatException("Not enough arguments");
         }
+
+        Skip = 3;
 
         position = new Vector3(
             int.Parse(Arguments[1]),
