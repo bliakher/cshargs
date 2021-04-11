@@ -51,22 +51,22 @@ namespace CShargs.Examples
 
     class Options : Parser
     {
-        [ValueOption("interleave", alias: "i", help: "Interleave memory allocation across given nodes.", required: false)]
+        [ValueOption("interleave", shortName:'i', help: "Interleave memory allocation across given nodes.", required: false)]
         public NodeNumbers Interleave { get; set; }
 
-        [ValueOption("preferred", alias: "p", help: "Prefer memory allocations from given node.", required: false)]
+        [ValueOption("preferred", shortName: 'p', help: "Prefer memory allocations from given node.", required: false)]
         public NodeNumber Preferred { get; set; }
 
-        [ValueOption("membind", alias: "m", help: "Allocate memory from given nodes only.", required: false)]
+        [ValueOption("membind", shortName: 'm', help: "Allocate memory from given nodes only.", required: false)]
         public NodeNumbers Membind { get; set; }
 
-        [ValueOption("physcpubind", alias: "C", help: "Run on given CPUs only.", required: false)]
+        [ValueOption("physcpubind", shortName: 'C', help: "Run on given CPUs only.", required: false)]
         public NodeNumbers Physcpubind { get; set; }
 
-        [FlagOption("show", alias: "S", help: "Show current NUMA policy.")]
+        [FlagOption("show", shortName:'S', help: "Show current NUMA policy.")]
         public bool Hardware { get; set; }
 
-        [FlagOption("hardware", alias: "H", help: "Print hardware configuration.")]
+        [FlagOption("hardware", shortName:'H', help: "Print hardware configuration.")]
         public bool Show { get; set; }
 
         public Options()
