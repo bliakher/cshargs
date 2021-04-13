@@ -88,7 +88,7 @@ Verb option attribute is used for subcommands. In this case, type of the option 
 
 class GitArguments : Parser {
     [VerbOption("push")]
-    PushArguments Push { get; set; }
+    GitPushArguments Push { get; set; }
 }
 
 class GitPushArguments : Parser {
