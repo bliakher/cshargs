@@ -1,0 +1,14 @@
+ .gitignore                       |  363 ++++++++++++++++++++++++++++++++++++++!
+ .gitlab-ci.yml                   |   15 +
+ Program.cs                       |    2 
+ Tests/Data/CustomOption.cs       |   44 ++++
+ Tests/Data/FlagOption.cs         |   38 ++++
+ Tests/Data/OptionDependencies.cs |   13 +
+ Tests/Data/OptionGroup.cs        |   27 ++
+ Tests/Data/ValueOption.cs        |   95 ++++++++++
+ Tests/Data/VerbOption.cs         |   25 ++
+ Tests/Tests.csproj               |   26 ++
+ Tests/TestsCShargs.cs            |  298 ++++++++++++++++++++++++++++++++
+ cshargs.csproj                   |    6 
+ cshargs.sln                      |   36 +++
+ 13 files changed, 982 insertions(+), 6 modifications(!)
