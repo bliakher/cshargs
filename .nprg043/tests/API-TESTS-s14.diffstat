@@ -1,0 +1,10 @@
+ .gitlab-ci.yml               |    9 ++
+ Parser.cs                    |    2 
+ Tests/Aliases.cs             |   38 +++++++++
+ Tests/MandatoryArguments.cs  |   72 ++++++++++++++++++
+ Tests/Others.cs              |   85 ++++++++++++++++++++++
+ Tests/RetrieveValues.cs      |   99 +++++++++++++++++++++++++
+ Tests/ValueArgumentsTypes.cs |  166 +++++++++++++++++++++++++++++++++++++++++++
+ Tests/s14-api-testing.csproj |   27 ++++++
+ Tests/s14-api-testing.sln    |   31 ++++++++
+ 9 files changed, 528 insertions(+), 1 modification(!)
