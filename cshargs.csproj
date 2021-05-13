@@ -7,4 +7,9 @@
     <NullableReferenceTypes>true</NullableReferenceTypes>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="xunit.assert" Version="2.4.1" />
+    <PackageReference Include="xunit.core" Version="2.4.1" />
+  </ItemGroup>
+
 </Project>
