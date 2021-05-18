@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace CShargs {
     interface IOptionAttribute {
@@ -10,7 +11,13 @@ namespace CShargs {
         bool Required { get; }
         string UseWith { get; }
         string HelpText { get; }
+
+        public void SetValue(object instance, MemberInfo member, object value) {
+            var prop = (PropertyInfo)member;
+            prop.SetValue(instance, value);
+        }
     }
+
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class FlagOptionAttribute : Attribute, IOptionAttribute {
@@ -22,6 +29,7 @@ namespace CShargs {
 
             Name = name;
             ShortName = shortName;
+            HelpText = help;
             UseWith = useWith;
         }
 
@@ -93,14 +101,19 @@ namespace CShargs {
             Required = required;
             ShortName = shortName;
             UseWith = useWith;
+            HelpText = help;
         }
-
 
         public string Name { get; private init; }
         public char ShortName { get; private init; }
         public bool Required { get; private init; }
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
+
+        public void SetValue(object instance, MemberInfo member, object value) {
+            var prop = (MethodInfo)member;
+            prop.SetValue(instance, value);
+        }
     }
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]

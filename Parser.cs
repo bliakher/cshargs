@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TokenReader = ListReader<string>;
 
 namespace CShargs
 {
@@ -18,12 +19,18 @@ namespace CShargs
 
         public Parser() { }
 
+        private TokenReader tokens_;
+
         /// <summary>
         /// Do the actual parsing.
         ///
         /// If parsing fails, <see cref="" />
         /// </summary>
-        public void Parse(string[] args) { }
+        public void Parse(string[] args) {
+
+            tokens_ = new(args);
+
+        }
 
         public string GenerateHelp()
         {
@@ -33,11 +40,12 @@ namespace CShargs
         }
         public void GenerateHelp(TextWriter output) { }
 
-        public IReadOnlyList<string> PlainArgs { get; set; }
+        public IReadOnlyList<string> PlainArgs => plainArgs_.AsReadOnly();
+        private List<string> plainArgs_;
 
 
         /// <summary>
-        /// Count of <see cref="Parser.PlainArgs"/> will be checked against this at the end of the parsing.
+        /// Count of <see cref="PlainArgs"/> will be checked against this at the end of the parsing.
         /// </summary>
         protected virtual int PlainArgsRequired => PlainArgs.Count;
 
