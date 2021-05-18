@@ -23,8 +23,13 @@ namespace CShargs
         {
             var properties = type.GetProperties();
             foreach (var property in properties) {
-                var attributes = property.GetCustomAttributes(typeof(IOptionAttribute));
-                // ToDo: check count of attributes
+                var attributes = Attribute.GetCustomAttributes(property, typeof(IOptionAttribute));
+                if (attributes.Length > 1) {
+                    throw new ConfigurationException("One property cannot be annotated with multiple attributes.");
+                }
+                if (attributes.Length == 1) {
+                    registerOption(property, (IOptionAttribute)attributes[0]);
+                }
             }
         }
 
