@@ -9,8 +9,11 @@ namespace CShargs
     {
         private Type type;
 
+
         public Dictionary<char, OptionMetadata> OptionsShort;
         public Dictionary<string, OptionMetadata> OptionsLong;
+        public Dictionary<string, OptionMetadata> OptionProperty;
+
 
         public ParserMetadata(Type type)
         {
@@ -42,7 +45,18 @@ namespace CShargs
             }
 
             OptionsLong[optionAttribute.Name] = option;
-            OptionsShort[optionAttribute.ShortName] = option;
+            if (optionAttribute.ShortName != '\0') {
+                OptionsShort[optionAttribute.ShortName] = option;
+            }
+            OptionProperty[member.Name] = option;
+        }
+
+        private void insertUseWithReferences(){
+            foreach (var option in OptionProperty.Values) {
+                if (option.UseWithName != null) {
+                    option.UseWith = OptionProperty[option.UseWithName];
+                }
+            }
         }
 
         public void CheckConflict()

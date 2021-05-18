@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 
+using TokenReader = ListReader<string>;
+
 namespace CShargs {
     interface IOptionAttribute {
         string Name { get; }
@@ -12,9 +14,11 @@ namespace CShargs {
         string UseWith { get; }
         string HelpText { get; }
 
-        public void Parse(object instance, MemberInfo member);
+        void Parse(object instance, OptionMetadata meta, TokenReader reader) {
+            
+        }
 
-        public void SetValue(object instance, MemberInfo member, object value) {
+        void SetValue(object instance, MemberInfo member, object value) {
             var prop = (PropertyInfo)member;
             prop.SetValue(instance, value);
         }
@@ -40,9 +44,9 @@ namespace CShargs {
         public bool Required => false;
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
-        public void Parse(object instance, MemberInfo member)
+        public void Parse(object instance, OptionMetadata meta, TokenReader reader)
         {
-            IOptionAttribute.SetValue(instance, member, true);
+            ((IOptionAttribute)this).SetValue(instance, member, true);
         }
     }
 
@@ -68,7 +72,7 @@ namespace CShargs {
         public bool Required { get; private init; }
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
-        public void Parse(object instance, MemberInfo member)
+        public void Parse(object instance, MemberInfo member, TokenReader reader)
         {
             throw new NotImplementedException();
         }
@@ -87,13 +91,13 @@ namespace CShargs {
         public string Name { get; private init; }
         public char ShortName => '\0';
         public bool Required => false;
+        public string UseWith => null;
         public string HelpText { get; private init; }
-        public void Parse(object instance, MemberInfo member)
+        public void Parse(object instance, MemberInfo member, TokenReader reader)
         {
             throw new NotImplementedException();
         }
 
-        public string UseWith => null;
     }
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
@@ -131,8 +135,8 @@ namespace CShargs {
         }
 
         public void SetValue(object instance, MemberInfo member, object value) {
-            var prop = (MethodInfo)member;
-            prop.SetValue(instance, value);
+            var method = (MethodInfo)member;
+            // TODO: method.Invoke
         }
     }
 
