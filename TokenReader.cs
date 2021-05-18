@@ -13,6 +13,9 @@ class ListReader<T> {
     }
 
     public T Read() {
+        if (position_ >= items_.Count) {
+            return default;
+        }
         return items_[position_++];
     }
 

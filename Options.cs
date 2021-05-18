@@ -12,6 +12,8 @@ namespace CShargs {
         string UseWith { get; }
         string HelpText { get; }
 
+        public void Parse(object instance, MemberInfo member);
+
         public void SetValue(object instance, MemberInfo member, object value) {
             var prop = (PropertyInfo)member;
             prop.SetValue(instance, value);
@@ -38,6 +40,10 @@ namespace CShargs {
         public bool Required => false;
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
+        public void Parse(object instance, MemberInfo member)
+        {
+            IOptionAttribute.SetValue(instance, member, true);
+        }
     }
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
@@ -62,6 +68,10 @@ namespace CShargs {
         public bool Required { get; private init; }
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
+        public void Parse(object instance, MemberInfo member)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
@@ -78,6 +88,11 @@ namespace CShargs {
         public char ShortName => '\0';
         public bool Required => false;
         public string HelpText { get; private init; }
+        public void Parse(object instance, MemberInfo member)
+        {
+            throw new NotImplementedException();
+        }
+
         public string UseWith => null;
     }
 
@@ -109,6 +124,11 @@ namespace CShargs {
         public bool Required { get; private init; }
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
+
+        public void Parse(object instance, MemberInfo member)
+        {
+            throw new NotImplementedException();
+        }
 
         public void SetValue(object instance, MemberInfo member, object value) {
             var prop = (MethodInfo)member;

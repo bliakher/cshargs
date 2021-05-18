@@ -31,6 +31,11 @@ namespace CShargs
 
             tokens_ = new(args);
             var metadata = getMetadata();
+            var curToken = tokens_.Read();
+            while (curToken != null) {
+                
+                curToken = tokens_.Read();
+            }
 
 
 
