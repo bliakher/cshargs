@@ -9,10 +9,10 @@ namespace CShargs
     {
         private Type type;
 
-
         public Dictionary<char, OptionMetadata> OptionsShort;
         public Dictionary<string, OptionMetadata> OptionsLong;
         public Dictionary<string, OptionMetadata> OptionProperty;
+        public List<GroupMetadata> Groups;
 
 
         public ParserMetadata(Type type)
@@ -34,6 +34,13 @@ namespace CShargs
                     registerOption(property, (IOptionAttribute)attributes[0]);
                 }
             }
+            insertUseWithReferences();
+            var groupAttributes = Attribute.GetCustomAttributes(type, typeof(OptionGroupAttribute));
+            foreach (var groupAttribute in groupAttributes) {
+                var group = new GroupMetadata((OptionGroupAttribute)groupAttribute, OptionProperty);
+                Groups.Add(group);
+            }
+            //ToDo: aliases
         }
 
         private void registerOption(MemberInfo member, IOptionAttribute optionAttribute)
@@ -51,7 +58,8 @@ namespace CShargs
             OptionProperty[member.Name] = option;
         }
 
-        private void insertUseWithReferences(){
+        private void insertUseWithReferences()
+        {
             foreach (var option in OptionProperty.Values) {
                 if (option.UseWithName != null) {
                     option.UseWith = OptionProperty[option.UseWithName];
@@ -59,9 +67,56 @@ namespace CShargs
             }
         }
 
-        public void CheckConflict()
+        public void CheckRules(HashSet<OptionMetadata> parsedOptions)
         {
+            checkRequired(parsedOptions);
+            checkUseWith(parsedOptions);
+            checkGroups(parsedOptions);
+        }
 
+        private void checkRequired(HashSet<OptionMetadata> parsedOptions)
+        {
+            foreach (var option in OptionProperty.Values) {
+                if (option.Required && !parsedOptions.Contains(option)) {
+                    throw new MissingOptionException(option.Name);
+                }
+            }
+        }
+
+        private void checkUseWith(HashSet<OptionMetadata> parsedOptions)
+        {
+            foreach (var option in parsedOptions) {
+                if (option.UseWith != null && !parsedOptions.Contains(option.UseWith)) {
+                    throw new OptionDependencyError(option.Name, option.UseWithName);
+                }
+            }
+        }
+        private void checkGroups(HashSet<OptionMetadata> parsedOptions)
+        {
+            foreach (var group in Groups) {
+                group.Check(parsedOptions);
+            }
+        }
+    }
+
+    internal class GroupMetadata
+    {
+        private HashSet<OptionMetadata> groupOptions;
+        public bool Required {get; private set;}
+
+        public GroupMetadata(OptionGroupAttribute groupAttribute, Dictionary<string, OptionMetadata> optionProperties)
+        {
+            foreach (var name in groupAttribute.OptionGroup) {
+                if (!optionProperties.ContainsKey(name)) {
+                    throw new ConfigurationException($"Error in option groups, property name {name} not known.");
+                }
+                groupOptions.Add(optionProperties[name]);
+            }
+        }
+
+        public void Check(HashSet<OptionMetadata> parsedOptions)
+        {
+            // ToDo: implement
         }
     }
 }

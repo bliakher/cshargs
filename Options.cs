@@ -6,19 +6,20 @@ using System.Reflection;
 
 using TokenReader = ListReader<string>;
 
-namespace CShargs {
-    interface IOptionAttribute {
+namespace CShargs
+{
+    interface IOptionAttribute
+    {
         string Name { get; }
         char ShortName { get; }
         bool Required { get; }
         string UseWith { get; }
         string HelpText { get; }
 
-        void Parse(object instance, OptionMetadata meta, TokenReader reader) {
-            
-        }
+        internal object Parse(object instance, OptionMetadata meta, TokenReader reader);
 
-        void SetValue(object instance, MemberInfo member, object value) {
+        void SetValue(object instance, MemberInfo member, object value)
+        {
             var prop = (PropertyInfo)member;
             prop.SetValue(instance, value);
         }
@@ -26,13 +27,14 @@ namespace CShargs {
 
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class FlagOptionAttribute : Attribute, IOptionAttribute {
+    public class FlagOptionAttribute : Attribute, IOptionAttribute
+    {
         public FlagOptionAttribute(
             string name,
             char shortName = '\0',
             string useWith = null,
-            string help = null) {
-
+            string help = null)
+        {
             Name = name;
             ShortName = shortName;
             HelpText = help;
@@ -44,22 +46,26 @@ namespace CShargs {
         public bool Required => false;
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
-        public void Parse(object instance, OptionMetadata meta, TokenReader reader)
+
+        object IOptionAttribute.Parse(object instance, OptionMetadata meta, TokenReader reader) => Parse(instance, meta, reader);
+        internal object Parse(object instance, OptionMetadata meta, TokenReader reader)
         {
-            ((IOptionAttribute)this).SetValue(instance, member, true);
+            reader.Read();
+            return true;
         }
+
     }
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class ValueOptionAttribute : Attribute, IOptionAttribute {
-
+    public class ValueOptionAttribute : Attribute, IOptionAttribute
+    {
         public ValueOptionAttribute(
             string name,
             bool required,
             char shortName = '\0',
             string useWith = null,
-            string help = null) {
-
+            string help = null)
+        {
             Name = name;
             Required = required;
             ShortName = shortName;
@@ -72,18 +78,32 @@ namespace CShargs {
         public bool Required { get; private init; }
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
-        public void Parse(object instance, MemberInfo member, TokenReader reader)
+
+        object IOptionAttribute.Parse(object instance, OptionMetadata meta, TokenReader reader) => Parse(instance, meta, reader);
+        internal object Parse(object instance, OptionMetadata meta, TokenReader tokens)
         {
-            throw new NotImplementedException();
+            string first = tokens.Read();
+            string value;
+            int index;
+            // TODO: check parser options
+            if ((index = first.IndexOf('=')) != -1) {
+                value = first.Substring(index + 1);
+            } else {
+                value = tokens.Read();
+            }
+
+            // ex: int.Parse(value)
+            return meta.InvokeStaticParseMethod(instance, value);
         }
     }
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class VerbOptionAttribute : Attribute, IOptionAttribute {
+    public class VerbOptionAttribute : Attribute, IOptionAttribute
+    {
         public VerbOptionAttribute(
             string name,
-            string help = null) {
-
+            string help = null)
+        {
             Name = name;
             HelpText = help;
         }
@@ -93,7 +113,9 @@ namespace CShargs {
         public bool Required => false;
         public string UseWith => null;
         public string HelpText { get; private init; }
-        public void Parse(object instance, MemberInfo member, TokenReader reader)
+
+        object IOptionAttribute.Parse(object instance, OptionMetadata meta, TokenReader reader) => Parse(instance, meta, reader);
+        internal object Parse(object instance, OptionMetadata meta, TokenReader reader)
         {
             throw new NotImplementedException();
         }
@@ -101,21 +123,24 @@ namespace CShargs {
     }
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class AliasOptionAttribute : Attribute {
+    public class AliasOptionAttribute : Attribute
+    {
         public AliasOptionAttribute(
             string name,
-            params string[] aliasOf) { }
+            params string[] aliasOf)
+        { }
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class CustomOptionAttribute : Attribute, IOptionAttribute {
+    public class CustomOptionAttribute : Attribute, IOptionAttribute
+    {
         public CustomOptionAttribute(
             string name,
             bool required,
             char shortName = '\0',
             string useWith = null,
-            string help = null) {
-
+            string help = null)
+        {
             Name = name;
             Required = required;
             ShortName = shortName;
@@ -129,22 +154,30 @@ namespace CShargs {
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
 
-        public void Parse(object instance, MemberInfo member)
+        internal void Parse(object instance, OptionMetadata meta, TokenReader reader)
         {
-            throw new NotImplementedException();
+
         }
 
-        public void SetValue(object instance, MemberInfo member, object value) {
+        public void SetValue(object instance, MemberInfo member, object value)
+        {
             var method = (MethodInfo)member;
-            // TODO: method.Invoke
+            method.Invoke(instance, new[] { value });
         }
     }
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class OptionGroupAttribute : Attribute {
+    public class OptionGroupAttribute : Attribute
+    {
+        public string[] OptionGroup { get; }
+        public bool Required { get; }
+
         public OptionGroupAttribute(
             bool required,
-            params string[] optionGroup) {
+            params string[] optionGroup)
+        {
+            OptionGroup = optionGroup;
+            Required = required;
         }
     }
 

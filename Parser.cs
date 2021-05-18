@@ -15,12 +15,19 @@ namespace CShargs
             string flagOptionSymbol = "-",
             string valueOptionSymbol = "--",
             string equalsSymbol = "="
-            ) { }
+            )
+            {
+                typeMetadata_ = new();
+                parsedOptions_ = new();
+            }
 
         public Parser() { }
 
-        private TokenReader tokens_;
         private static Dictionary<Type, ParserMetadata> typeMetadata_;
+
+        private TokenReader tokens_;
+        private HashSet<OptionMetadata> parsedOptions_;
+
 
         /// <summary>
         /// Do the actual parsing.
@@ -33,11 +40,11 @@ namespace CShargs
             var metadata = getMetadata();
             var curToken = tokens_.Read();
             while (curToken != null) {
-                
+
                 curToken = tokens_.Read();
             }
 
-
+            metadata.CheckRules(parsedOptions_);
 
         }
 

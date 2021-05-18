@@ -49,6 +49,14 @@ namespace CShargs {
             : base(optionName, $"Required option '{optionName}' is missing.", innerException) { }
     }
 
+    /// <summary>
+    /// Thrown when a a useWith dependency of option is missing
+    /// </summary>
+    public class OptionDependencyError : OptionException {
+        internal OptionDependencyError(string optionName, string dependencyName, Exception innerException = null)
+            : base(optionName, $"Option {optionName} is used without dependency {dependencyName}", innerException) {}
+    }
+
     public class PlainArgsCountException : ParsingException {
         internal PlainArgsCountException(string message, Exception inner)
             : base (message, inner) { }

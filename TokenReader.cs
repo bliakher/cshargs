@@ -13,14 +13,17 @@ class ListReader<T> {
     }
 
     public T Read() {
-        if (position_ >= items_.Count) {
-            return default;
-        }
-        return items_[position_++];
+        T result = Peek();
+        position_++;
+
+        return result;
     }
 
     public T Peek() => Peek(0);
     public T Peek(int amount) {
+        if (position_ >= items_.Count) {
+            return default;
+        }
         return items_[position_ + amount];
     }
 }
