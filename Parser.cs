@@ -20,6 +20,7 @@ namespace CShargs
         public Parser() { }
 
         private TokenReader tokens_;
+        private static Dictionary<Type, ParserMetadata> typeMetadata_;
 
         /// <summary>
         /// Do the actual parsing.
@@ -29,7 +30,22 @@ namespace CShargs
         public void Parse(string[] args) {
 
             tokens_ = new(args);
+            var metadata = getMetadata();
 
+
+
+        }
+
+        private ParserMetadata getMetadata()
+        {
+            var type = this.GetType();
+            if (!typeMetadata_.ContainsKey(type)) {
+                var metadata = new ParserMetadata(type);
+                metadata.LoadData();
+                metadata.CheckConflict();
+                typeMetadata_[type] = metadata;
+            }
+            return typeMetadata_[type];
         }
 
         public string GenerateHelp()
