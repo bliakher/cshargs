@@ -8,8 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="xunit.assert" Version="2.4.1" />
-    <PackageReference Include="xunit.core" Version="2.4.1" />
+    <Compile Remove="Tests-s14\**" />
+    <EmbeddedResource Remove="Tests-s14\**" />
+    <None Remove="Tests-s14\**" />
   </ItemGroup>
 
 </Project>
