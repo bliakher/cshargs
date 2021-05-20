@@ -1,9 +1,25 @@
 default:
-    image: mcr.microsoft.com/dotnet/sdk:5.0
+  image: mcr.microsoft.com/dotnet/sdk:5.0
 
-Test:
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - dotnet build
+
+test-s14:
     stage: test
     before_script:
         - 'dotnet add package Xunit'
     script:
-        - 'dotnet test Tests/s14-api-testing.csproj'
+        - 'dotnet test Tests-s14/s14-api-testing.csproj'
+
+test-s11:
+  stage: test
+  script:
+    - 'dotnet test Tests-s11/Tests.csproj'
+
+
