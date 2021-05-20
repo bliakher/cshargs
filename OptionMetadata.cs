@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -10,7 +11,6 @@ namespace CShargs
     {
         private MemberInfo member_ { get; init; }
         private IOptionAttribute attribute_ { get; init; }
-
         public string Name => attribute_.Name;
         public Type OptionType { get; private init; }
         public bool Required => attribute_.Required;
@@ -56,6 +56,18 @@ namespace CShargs
         public void SetValue(object instance, object value)
         {
             attribute_.SetValue(instance, member_, value);
+        }
+
+        public IEnumerable<IRule> ExtractRules()
+        {
+            var rules = new List<IRule>();
+            if (Required) {
+                rules.Add(new RequiredRule(this));
+            }
+            if (UseWith != null) {
+                rules.Add(new DependencyRule(this));
+            }
+            return rules;
         }
     }
 }

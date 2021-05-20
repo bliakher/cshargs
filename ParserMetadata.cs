@@ -12,7 +12,8 @@ namespace CShargs
         public Dictionary<char, OptionMetadata> OptionsShort;
         public Dictionary<string, OptionMetadata> OptionsLong;
         public Dictionary<string, OptionMetadata> OptionProperty;
-        public List<GroupMetadata> Groups;
+        public List<GroupRule> Groups;
+        private List<IRule> rules_;
 
 
         public ParserMetadata(Type type)
@@ -20,6 +21,7 @@ namespace CShargs
             this.type = type;
             OptionsShort = new();
             OptionsLong = new();
+            rules_ = new List<IRule>();
         }
 
         public void LoadData()
@@ -35,11 +37,7 @@ namespace CShargs
                 }
             }
             insertUseWithReferences();
-            var groupAttributes = Attribute.GetCustomAttributes(type, typeof(OptionGroupAttribute));
-            foreach (var groupAttribute in groupAttributes) {
-                var group = new GroupMetadata((OptionGroupAttribute)groupAttribute, OptionProperty);
-                Groups.Add(group);
-            }
+            extractRules();
             //ToDo: aliases
         }
 
@@ -67,56 +65,26 @@ namespace CShargs
             }
         }
 
-        public void CheckRules(HashSet<OptionMetadata> parsedOptions)
-        {
-            checkRequired(parsedOptions);
-            checkUseWith(parsedOptions);
-            checkGroups(parsedOptions);
-        }
-
-        private void checkRequired(HashSet<OptionMetadata> parsedOptions)
+        private void extractRules()
         {
             foreach (var option in OptionProperty.Values) {
-                if (option.Required && !parsedOptions.Contains(option)) {
-                    throw new MissingOptionException(option.Name);
-                }
+                var rules = option.ExtractRules();
+                rules_.AddRange(rules);
+            }
+            
+            var groupAttributes = Attribute.GetCustomAttributes(type, typeof(OptionGroupAttribute));
+            foreach (var groupAttribute in groupAttributes) {
+                var group = new GroupRule((OptionGroupAttribute)groupAttribute, OptionProperty);
+                rules_.Add(group);
             }
         }
 
-        private void checkUseWith(HashSet<OptionMetadata> parsedOptions)
+        public void CheckRules(HashSet<OptionMetadata> parsedOptions)
         {
-            foreach (var option in parsedOptions) {
-                if (option.UseWith != null && !parsedOptions.Contains(option.UseWith)) {
-                    throw new OptionDependencyError(option.Name, option.UseWithName);
-                }
-            }
-        }
-        private void checkGroups(HashSet<OptionMetadata> parsedOptions)
-        {
-            foreach (var group in Groups) {
-                group.Check(parsedOptions);
+            foreach (var rule in rules_) {
+                rule.Check(parsedOptions);
             }
         }
     }
-
-    internal class GroupMetadata
-    {
-        private HashSet<OptionMetadata> groupOptions;
-        public bool Required {get; private set;}
-
-        public GroupMetadata(OptionGroupAttribute groupAttribute, Dictionary<string, OptionMetadata> optionProperties)
-        {
-            foreach (var name in groupAttribute.OptionGroup) {
-                if (!optionProperties.ContainsKey(name)) {
-                    throw new ConfigurationException($"Error in option groups, property name {name} not known.");
-                }
-                groupOptions.Add(optionProperties[name]);
-            }
-        }
-
-        public void Check(HashSet<OptionMetadata> parsedOptions)
-        {
-            // ToDo: implement
-        }
-    }
+    
 }

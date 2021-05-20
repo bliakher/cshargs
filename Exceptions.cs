@@ -1,4 +1,6 @@
-﻿using Exception = System.Exception;
+﻿using System;
+using System.Collections.Generic;
+using Exception = System.Exception;
 using FormatException = System.FormatException;
 
 namespace CShargs {
@@ -49,6 +51,18 @@ namespace CShargs {
             : base(optionName, $"Required option '{optionName}' is missing.", innerException) { }
     }
 
+    public class MissingGroupOptionException : ParsingException
+    { 
+        internal MissingGroupOptionException(IEnumerable<string> groupOptions, Exception innerException = null)
+            : base($"Missing option from required group ( {String.Join(" | ", groupOptions)} )", innerException){}
+    }
+
+    public class MultipleOptionsFromExclusiveGroup : ParsingException
+    {
+        internal MultipleOptionsFromExclusiveGroup(IEnumerable<string> groupOptions, Exception innerException = null)
+            : base($"You can't use multiple options from exclusive group ( {String.Join(" | ", groupOptions)} )", innerException) {}
+    }
+    
     /// <summary>
     /// Thrown when a a useWith dependency of option is missing
     /// </summary>
