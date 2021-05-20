@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CShargs
 {
@@ -20,7 +21,7 @@ namespace CShargs
         public void Check(HashSet<OptionMetadata> parsedOptions)
         {
             if (!parsedOptions.Contains(target)) {
-                throw new MissingOptionException(target.Name);
+                throw new MissingOptionException(target.LongName);
             }
         }
     }
@@ -38,7 +39,7 @@ namespace CShargs
         {
             var dependency = target.UseWith;
             if (dependency != null && parsedOptions.Contains(target) && !parsedOptions.Contains(dependency)) {
-                throw new OptionDependencyError(target.Name, dependency.Name);
+                throw new OptionDependencyError(target.LongName, dependency.LongName);
             }
         }
     }
@@ -75,10 +76,6 @@ namespace CShargs
             }
         }
 
-        private IEnumerable<string> getOptionNames()
-        {
-            //ToDo
-            return null;
-        }
+        private IEnumerable<string> getOptionNames() => groupOptions_.Select(opt => opt.GetRawName());
     }
 }

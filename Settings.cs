@@ -60,5 +60,30 @@ namespace CShargs {
         ForbidLongSpace = 1 << 7,
 
     }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public class ParserSettingsAttribute : Attribute {
+
+        public ParserSettingsAttribute(
+            OptionSettings optionSettings = OptionSettings.Default,
+            string shortOptionSymbol = "-",
+            string longOptionSymbol = "--",
+            string delimiterSymbol = "--",
+            string equalsSymbol = "="
+            )
+        {
+            Settings = optionSettings;
+            ShortOptionSymbol = shortOptionSymbol;
+            LongOptionSymbol = longOptionSymbol;
+            DelimiterSymbol = delimiterSymbol;
+            EqualsSymbol = equalsSymbol;
+        }
+
+        public OptionSettings Settings { get; private init; }
+        public string ShortOptionSymbol { get; private init; }
+        public string LongOptionSymbol { get; private init; }
+        public string DelimiterSymbol { get; private init; }
+        public string EqualsSymbol { get; private init; }
+    }
 }
 

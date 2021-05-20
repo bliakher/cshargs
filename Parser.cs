@@ -12,25 +12,12 @@ namespace CShargs
 {
     public abstract class Parser
     {
-        public Parser(
-            OptionSettings optionSettings = OptionSettings.Default,
-            string shortOptionSymbol = "-",
-            string longOptionSymbol = "--",
-            string delimiterSymbol = "--",
-            string equalsSymbol = "="
-            )
+        public Parser()
         {
-
-            ShortOptionSymbol = shortOptionSymbol;
-            LongOptionSymbol = longOptionSymbol;
-            DelimiterSymbol = delimiterSymbol;
-            EqualsSymbol = equalsSymbol;
-            Settings = optionSettings;
-
             metadata_ = getMetadata();
         }
 
-        public string ShortOptionSymbol { get; private init; }
+        public string ShortOptionSymbol =>metadata_.Settings
         public string LongOptionSymbol { get; private init; }
         public string DelimiterSymbol { get; private init; }
         public string EqualsSymbol { get; private init; }
@@ -120,7 +107,7 @@ namespace CShargs
                 name = rawArg.Substring(LongOptionSymbol.Length, rawArg.Length - LongOptionSymbol.Length - eqIdx);
             }
 
-            if (metadata_.OptionsLong.TryGetValue(name, out var option)) {
+            if (metadata_.OptionsByLong.TryGetValue(name, out var option)) {
 
                 option.Parse(this, tokens_);
                 return true;
@@ -139,7 +126,7 @@ namespace CShargs
             var type = this.GetType();
             if (!typeMetadata_.ContainsKey(type)) {
                 var metadata = new ParserMetadata(type);
-                metadata.LoadData();
+                metadata.LoadAtrributes();
                 typeMetadata_[type] = metadata;
             }
             return typeMetadata_[type];

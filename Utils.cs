@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace CShargs
@@ -22,6 +23,14 @@ namespace CShargs
             if (condition) {
                 throw new InvalidOperationException(message);
             }
+        }
+    }
+
+    internal static class OperatorsEx
+    {
+        public static bool In<T, TElem>(this T obj, ICollection<TElem> collection) where T : TElem
+        {
+            return collection.Contains(obj);
         }
     }
 
