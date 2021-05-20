@@ -7,4 +7,10 @@
     <NullableReferenceTypes>true</NullableReferenceTypes>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Tests-s14\**" />
+    <EmbeddedResource Remove="Tests-s14\**" />
+    <None Remove="Tests-s14\**" />
+  </ItemGroup>
+
 </Project>
