@@ -8,9 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Tests\**" />
-    <EmbeddedResource Remove="Tests\**" />
-    <None Remove="Tests\**" />
+    <Compile Remove="Tests-s11\**" />
+    <None Remove="Tests-s11\**" />
+    <EmbeddedResource Remove="Tests-s11\**" />
+    <Compile Remove="Tests-s14\**" />
+    <EmbeddedResource Remove="Tests-s14\**" />
+    <None Remove="Tests-s14\**" />
   </ItemGroup>
 
 </Project>
