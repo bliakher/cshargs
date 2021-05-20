@@ -2,28 +2,41 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-class ListReader<T> {
+namespace CShargs
+{
+    internal class ListReader<T>
+    {
 
-    int position_;
-    IList<T> items_;
+        int position_;
+        IList<T> items_;
 
-    public ListReader(IList<T> items) {
-        items_ = items;
-        position_ = 0;
-    }
+        public int Position => position_;
+        public bool EndOfList => position_ >= items_.Count;
 
-    public T Read() {
-        T result = Peek();
-        position_++;
-
-        return result;
-    }
-
-    public T Peek() => Peek(0);
-    public T Peek(int amount) {
-        if (position_ >= items_.Count) {
-            return default;
+        public ListReader(IList<T> items)
+        {
+            ThrowIf.ArgumentNull(nameof(items), items);
+            items_ = items;
+            position_ = 0;
         }
-        return items_[position_ + amount];
+
+        public T Read()
+        {
+            T result = Peek();
+            if (!EndOfList) {
+                position_++;
+            }
+
+            return result;
+        }
+
+        public T Peek() => Peek(0);
+        public T Peek(int amount)
+        {
+            if (EndOfList) {
+                return default;
+            }
+            return items_[position_ + amount];
+        }
     }
 }

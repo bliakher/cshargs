@@ -40,9 +40,6 @@ bld/
 # JetBrains Rider files
 .idea/
 
-# Solution file
-*.sln
-
 # Visual Studio 2017 auto generated files
 Generated\ Files/
 

@@ -1,33 +1,60 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TokenReader = ListReader<string>;
+using TokenReader = CShargs.ListReader<string>;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("s14-api-testing")]
 namespace CShargs
 {
-    abstract class Parser
+    public abstract class Parser
     {
         public Parser(
             OptionSettings optionSettings = OptionSettings.Default,
-            string flagOptionSymbol = "-",
-            string valueOptionSymbol = "--",
+            string shortOptionSymbol = "-",
+            string longOptionSymbol = "--",
+            string delimiterSymbol = "--",
             string equalsSymbol = "="
             )
-            {
-                typeMetadata_ = new();
-                parsedOptions_ = new();
-            }
+        {
 
-        public Parser() { }
+            ShortOptionSymbol = shortOptionSymbol;
+            LongOptionSymbol = longOptionSymbol;
+            DelimiterSymbol = delimiterSymbol;
+            EqualsSymbol = equalsSymbol;
+            Settings = optionSettings;
 
-        private static Dictionary<Type, ParserMetadata> typeMetadata_;
+            metadata_ = getMetadata();
+        }
 
+        public string ShortOptionSymbol { get; private init; }
+        public string LongOptionSymbol { get; private init; }
+        public string DelimiterSymbol { get; private init; }
+        public string EqualsSymbol { get; private init; }
+        public OptionSettings Settings { get; private init; }
+
+        private readonly static Dictionary<Type, ParserMetadata> typeMetadata_ = new();
+        private readonly HashSet<OptionMetadata> parsedOptions_ = new();
+
+        private string[] rawArgs_;
+        private List<string> plainArgs_ = new();
         private TokenReader tokens_;
-        private HashSet<OptionMetadata> parsedOptions_;
+        private ParserMetadata metadata_;
+
+        public bool Parsed { get; private set; }
+
+        /// <summary>
+        /// List of all plain arguments
+        /// </summary>
+        public IReadOnlyList<string> PlainArgs => plainArgs_.AsReadOnly();
+
+        /// <summary>
+        /// View on the raw arguments array starting at the currently parsed argument
+        /// </summary>
+        protected ArraySegment<string> Arguments => new ArraySegment<string>(rawArgs_, tokens_.Position, rawArgs_.Length - tokens_.Position);
 
 
         /// <summary>
@@ -35,17 +62,75 @@ namespace CShargs
         ///
         /// If parsing fails, <see cref="" />
         /// </summary>
-        public void Parse(string[] args) {
+        public void Parse(string[] args)
+        {
+            ThrowIf.ArgumentNull(nameof(args), args);
+            ThrowIf.InState(Parsed == true);
 
-            tokens_ = new(args);
-            var metadata = getMetadata();
-            var curToken = tokens_.Read();
-            while (curToken != null) {
+            rawArgs_ = args;
+            tokens_ = new TokenReader(args);
 
-                curToken = tokens_.Read();
+            bool delimited = false;
+
+            while (!tokens_.EndOfList) {
+                if (skip > 0) {
+                    skip--;
+                    tokens_.Read();
+                }
+
+                int position = tokens_.Position;
+                string rawArg = tokens_.Peek();
+                bool plain = delimited;
+
+                if (!delimited) {
+                    if (rawArg == DelimiterSymbol) {
+
+                        delimited = plain = true;
+
+                    } else if (rawArg.StartsWith(LongOptionSymbol)) {
+
+                        if (!tryParseLong(rawArg) && LongOptionSymbol == ShortOptionSymbol) {
+                            TryParseShort(rawArg);
+                        }
+
+                    } else if (rawArg.StartsWith(ShortOptionSymbol)) {
+
+                        TryParseShort(rawArg);
+                    }
+                }
+
+                if (plain) {
+                    plainArgs_.Add(tokens_.Read());
+                }
+
+                Debug.Assert(tokens_.Position > position, "No tokens have been consumed.");
             }
 
-            metadata.CheckRules(parsedOptions_);
+            metadata_.CheckRules(parsedOptions_);
+
+        }
+
+        private bool tryParseLong(string rawArg)
+        {
+            int eqIdx = 0;
+            string name;
+            if (Settings.HasFlag(OptionSettings.ForbidLongEquals) || (eqIdx = rawArg.IndexOf(EqualsSymbol)) == -1) {
+                name = rawArg.Substring(LongOptionSymbol.Length);
+            } else {
+                name = rawArg.Substring(LongOptionSymbol.Length, rawArg.Length - LongOptionSymbol.Length - eqIdx);
+            }
+
+            if (metadata_.OptionsLong.TryGetValue(name, out var option)) {
+
+                option.Parse(this, tokens_);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        private bool TryParseShort(string rawArg)
+        {
 
         }
 
@@ -55,7 +140,6 @@ namespace CShargs
             if (!typeMetadata_.ContainsKey(type)) {
                 var metadata = new ParserMetadata(type);
                 metadata.LoadData();
-                metadata.CheckConflict();
                 typeMetadata_[type] = metadata;
             }
             return typeMetadata_[type];
@@ -68,10 +152,6 @@ namespace CShargs
             return sw.ToString();
         }
         public void GenerateHelp(TextWriter output) { }
-
-        public IReadOnlyList<string> PlainArgs => plainArgs_.AsReadOnly();
-        private List<string> plainArgs_;
-
 
         /// <summary>
         /// Count of <see cref="PlainArgs"/> will be checked against this at the end of the parsing.
@@ -90,12 +170,5 @@ namespace CShargs
                 } else throw new ArgumentOutOfRangeException();
             }
         }
-
-        /// <summary>
-        /// View on the raw arguments array starting at the currently parsed argument
-        /// </summary>
-        protected ArraySegment<string> Arguments => throw new NotImplementedException();
-
-
     }
 }

@@ -11,7 +11,7 @@ namespace CShargs {
     /// </summary>
 
     [Flags]
-    enum OptionSettings {
+    public enum OptionSettings {
 
         /// <summary>
         /// Case sensitive, all syntax variants allowed.

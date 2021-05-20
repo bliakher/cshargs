@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 
-using TokenReader = ListReader<string>;
+using TokenReader = CShargs.ListReader<string>;
 
 namespace CShargs
 {
@@ -15,6 +15,7 @@ namespace CShargs
         bool Required { get; }
         string UseWith { get; }
         string HelpText { get; }
+        bool CanConcat { get; }
 
         internal object Parse(object instance, OptionMetadata meta, TokenReader reader);
 
@@ -46,6 +47,7 @@ namespace CShargs
         public bool Required => false;
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
+        public bool CanConcat => true;
 
         object IOptionAttribute.Parse(object instance, OptionMetadata meta, TokenReader reader) => Parse(instance, meta, reader);
         internal object Parse(object instance, OptionMetadata meta, TokenReader reader)
@@ -61,7 +63,7 @@ namespace CShargs
     {
         public ValueOptionAttribute(
             string name,
-            bool required,
+            bool required = false,
             char shortName = '\0',
             string useWith = null,
             string help = null)
@@ -78,6 +80,7 @@ namespace CShargs
         public bool Required { get; private init; }
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
+        public bool CanConcat => false;
 
         object IOptionAttribute.Parse(object instance, OptionMetadata meta, TokenReader reader) => Parse(instance, meta, reader);
         internal object Parse(object instance, OptionMetadata meta, TokenReader tokens)
@@ -113,6 +116,7 @@ namespace CShargs
         public bool Required => false;
         public string UseWith => null;
         public string HelpText { get; private init; }
+        public bool CanConcat => false;
 
         object IOptionAttribute.Parse(object instance, OptionMetadata meta, TokenReader reader) => Parse(instance, meta, reader);
         internal object Parse(object instance, OptionMetadata meta, TokenReader reader)
@@ -136,7 +140,7 @@ namespace CShargs
     {
         public CustomOptionAttribute(
             string name,
-            bool required,
+            bool required = false,
             char shortName = '\0',
             string useWith = null,
             string help = null)
@@ -153,6 +157,7 @@ namespace CShargs
         public bool Required { get; private init; }
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
+        public bool CanConcat => false;
 
         internal void Parse(object instance, OptionMetadata meta, TokenReader reader)
         {
@@ -163,6 +168,10 @@ namespace CShargs
         {
             var method = (MethodInfo)member;
             method.Invoke(instance, new[] { value });
+        }
+
+        object IOptionAttribute.Parse(object instance, OptionMetadata meta, TokenReader reader) {
+            throw new NotImplementedException();
         }
     }
 

@@ -16,6 +16,13 @@ namespace CShargs
                 }
             }
         }
+
+        internal static void InState(bool condition, string message = null)
+        {
+            if (condition) {
+                throw new InvalidOperationException(message);
+            }
+        }
     }
 
     internal static class ReflectionEx

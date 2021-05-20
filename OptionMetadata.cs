@@ -2,8 +2,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-
-using TokenReader = ListReader<string>;
+using TokenReader = CShargs.ListReader<string>;
 
 namespace CShargs
 {
