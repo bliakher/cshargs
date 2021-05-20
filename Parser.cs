@@ -109,7 +109,7 @@ namespace CShargs
 
             if (metadata_.OptionsByLong.TryGetValue(name, out var option)) {
 
-                option.Parse(this, tokens_);
+                option.ParseAndSet(this, tokens_);
                 return true;
             } else {
                 return false;

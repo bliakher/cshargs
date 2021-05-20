@@ -1,0 +1,14 @@
+
+TODO list:
+
++ move Parser options to metadata
+  - rewrite examples
++ correct option names in GroupRule
+- aliases
+    + loading
+    - parsing
+- custom options
+    - loading
+    + parsing
++ split attributes to POCO and parser
+- groups

@@ -10,20 +10,14 @@ namespace CShargs
 {
     interface IOptionAttribute
     {
-        string Name { get; }
+        string LongName { get; }
         char ShortName { get; }
         bool Required { get; }
         string UseWith { get; }
         string HelpText { get; }
         bool CanConcat { get; }
 
-        internal object Parse(object instance, OptionMetadata meta, TokenReader reader);
-
-        void SetValue(object instance, MemberInfo member, object value)
-        {
-            var prop = (PropertyInfo)member;
-            prop.SetValue(instance, value);
-        }
+        internal OptionMetadata CreateMetadata(ParserMetadata parserMeta, MemberInfo member);
     }
 
 
@@ -36,26 +30,24 @@ namespace CShargs
             string useWith = null,
             string help = null)
         {
-            Name = name;
+            ThrowIf.ArgumentNull(nameof(name), name);
+            LongName = name;
             ShortName = shortName;
             HelpText = help;
             UseWith = useWith;
         }
 
-        public string Name { get; private init; }
+        public string LongName { get; private init; }
         public char ShortName { get; private init; }
         public bool Required => false;
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
         public bool CanConcat => true;
 
-        object IOptionAttribute.Parse(object instance, OptionMetadata meta, TokenReader reader) => Parse(instance, meta, reader);
-        internal object Parse(object instance, OptionMetadata meta, TokenReader reader)
+        OptionMetadata IOptionAttribute.CreateMetadata(ParserMetadata parserMeta, MemberInfo member)
         {
-            reader.Read();
-            return true;
+            return new FlagOption(parserMeta, (PropertyInfo)member, this);
         }
-
     }
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
@@ -68,35 +60,24 @@ namespace CShargs
             string useWith = null,
             string help = null)
         {
-            Name = name;
+            ThrowIf.ArgumentNull(nameof(name), name);
+            LongName = name;
             Required = required;
             ShortName = shortName;
             UseWith = useWith;
             HelpText = help;
         }
 
-        public string Name { get; private init; }
+        public string LongName { get; private init; }
         public char ShortName { get; private init; }
         public bool Required { get; private init; }
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
         public bool CanConcat => false;
 
-        object IOptionAttribute.Parse(object instance, OptionMetadata meta, TokenReader reader) => Parse(instance, meta, reader);
-        internal object Parse(object instance, OptionMetadata meta, TokenReader tokens)
+        OptionMetadata IOptionAttribute.CreateMetadata(ParserMetadata parserMeta, MemberInfo member)
         {
-            string first = tokens.Read();
-            string value;
-            int index;
-            // TODO: check parser options
-            if ((index = first.IndexOf('=')) != -1) {
-                value = first.Substring(index + 1);
-            } else {
-                value = tokens.Read();
-            }
-
-            // ex: int.Parse(value)
-            return meta.InvokeStaticParseMethod(instance, value);
+            return new ValueOption(parserMeta, (PropertyInfo)member, this);
         }
     }
 
@@ -107,33 +88,25 @@ namespace CShargs
             string name,
             string help = null)
         {
-            Name = name;
+            ThrowIf.ArgumentNull(nameof(name), name);
+            LongName = name;
             HelpText = help;
         }
 
-        public string Name { get; private init; }
+        public string LongName { get; private init; }
         public char ShortName => '\0';
         public bool Required => false;
         public string UseWith => null;
         public string HelpText { get; private init; }
         public bool CanConcat => false;
 
-        object IOptionAttribute.Parse(object instance, OptionMetadata meta, TokenReader reader) => Parse(instance, meta, reader);
-        internal object Parse(object instance, OptionMetadata meta, TokenReader reader)
+
+        OptionMetadata IOptionAttribute.CreateMetadata(ParserMetadata parserMeta, MemberInfo member)
         {
-            throw new NotImplementedException();
+            return new VerbOption(parserMeta, (PropertyInfo)member, this);
         }
-
     }
 
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class AliasOptionAttribute : Attribute
-    {
-        public AliasOptionAttribute(
-            string name,
-            params string[] aliasOf)
-        { }
-    }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class CustomOptionAttribute : Attribute, IOptionAttribute
@@ -145,32 +118,49 @@ namespace CShargs
             string useWith = null,
             string help = null)
         {
-            Name = name;
+            ThrowIf.ArgumentNull(nameof(name), name);
+            LongName = name;
             Required = required;
             ShortName = shortName;
             UseWith = useWith;
             HelpText = help;
         }
 
-        public string Name { get; private init; }
+        public string LongName { get; private init; }
         public char ShortName { get; private init; }
         public bool Required { get; private init; }
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
         public bool CanConcat => false;
 
-        internal void Parse(object instance, OptionMetadata meta, TokenReader reader)
+        OptionMetadata IOptionAttribute.CreateMetadata(ParserMetadata parserMeta, MemberInfo member)
         {
+            return new CustomOption(parserMeta, (MethodInfo)member, this);
+        }
+    }
 
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+    public class AliasOptionAttribute : Attribute, IOptionAttribute
+    {
+        public AliasOptionAttribute(
+            string alias,
+            params string[] targets)
+        {
+            Alias = alias;
+            Targets = targets;
         }
 
-        public void SetValue(object instance, MemberInfo member, object value)
-        {
-            var method = (MethodInfo)member;
-            method.Invoke(instance, new[] { value });
-        }
+        public string Alias { get; private init; }
+        public IReadOnlyList<string> Targets { get; private init; }
+        public string LongName => Alias.Length != 1 ? Alias : null;
+        public char ShortName => Alias.Length == 1 ? Alias[0] : '\0';
+        public bool Required => false;
+        public string UseWith => null;
+        public string HelpText => null;
+        public bool CanConcat => true;
 
-        object IOptionAttribute.Parse(object instance, OptionMetadata meta, TokenReader reader) {
+        OptionMetadata IOptionAttribute.CreateMetadata(ParserMetadata parserMeta, MemberInfo member)
+        {
             throw new NotImplementedException();
         }
     }

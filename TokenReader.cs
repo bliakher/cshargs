@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CShargs
 {
@@ -37,6 +38,14 @@ namespace CShargs
                 return default;
             }
             return items_[position_ + amount];
+        }
+
+        public IEnumerable<T> ReadToEnd()
+        {
+            var result = items_.Skip(position_);
+            position_ = items_.Count;
+            
+            return result;
         }
     }
 }
