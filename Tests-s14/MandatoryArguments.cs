@@ -48,7 +48,7 @@ namespace s14_api_testing
         }
 
         [Fact]
-        public void OptionalArgumentTrue_MissingArgument_Works()
+        public void OptionalArgumentTrue_MissingArgument_Works() // rework
         {
             string[] args= { "-s" };
             var CLParser = new TargetWithRequiredFalse();
@@ -60,7 +60,7 @@ namespace s14_api_testing
 
         [Theory]
         [InlineData("-s")]
-        public void OptionalArgTrue_Missing_ThrowsExcept(params string[] args)
+        public void OptionalArgTrue_Missing_ThrowsExcept(params string[] args) //rework
         {
             // Assign
             var CLParser = new TargetWithRequiredTrue();

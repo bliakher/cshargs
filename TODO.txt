@@ -11,4 +11,4 @@ TODO list:
     - loading
     + parsing
 + split attributes to POCO and parser
-- groups
++ groups

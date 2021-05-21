@@ -34,8 +34,8 @@ namespace Tests
         [InlineData(new string[] { "-r" }, true)]
         [InlineData(new string[] { "-R" }, true)]
         [InlineData(new string[] { "--force", "-R", "file" }, true)]
-        [InlineData(new string[] { "-rR" }, false)]
-        public void IsFlagOptionWithOneAliasPresent(string[] args, bool optionParsed)
+        [InlineData(new string[] { "-rR" }, false)] // really false?
+        public void IsFlagOptionWithOneAliasPresent(string[] args, bool optionParsed) // look into
         {
             // Arrange
             var arguments = new AliasFlagArguments();
@@ -229,9 +229,9 @@ namespace Tests
         [Theory]
         [InlineData(new string[] { "--verbose", "command1", "command2", "command3" }, 2, true)]
         [InlineData(new string[] { "command1", "--verbose", "--", "command2" }, 2, true)]
-        [InlineData(new string[] { "--", "command1", "command2", "--verbose"}, 2, true)] // skipped because of the delimiter
-        [InlineData(new string[] { "command1", "--verbose", "command2" }, 1, false)]
-        public void HasOptionBeenSkipped(string[] args, int argsToSkip, bool optionSkipped)
+        [InlineData(new string[] { "--", "command1", "command2", "--verbose"}, 2, false)] // skipped because of the delimiter
+        [InlineData(new string[] { "command1", "--verbose", "command2" }, 1, true)]
+        public void HasOptionBeenSkipped(string[] args, int argsToSkip, bool optionSkipped) // look into
         {
             // Arrange
             var arguments = new SkippedArguments(argsToSkip);

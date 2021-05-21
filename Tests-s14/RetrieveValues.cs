@@ -25,7 +25,7 @@ namespace s14_api_testing
             [ValueOption("delta", shortName: 'd', help: "Specify short delta")]
             public short Delta { get; set; }
 
-            [ValueOption("epsilon", shortName: 'e', help: "Specify long ")]
+            [ValueOption("epsilon", shortName: 'e', help: "Specify long epsilon")]
             public long Epsilon { get; set; }
         }
 
@@ -80,7 +80,7 @@ namespace s14_api_testing
             CLParser.Parse(args);
 
             // Assert
-            Assert.Equal(13, CLParser.Delta);
+            Assert.Equal((short)13, CLParser.Delta);
         }
         [Fact]
         public void ReturnLongOptionValue()
@@ -93,7 +93,7 @@ namespace s14_api_testing
             CLParser.Parse(args);
 
             // Assert
-            Assert.Equal(5000000, CLParser.Epsilon);
+            Assert.Equal(5000000L, CLParser.Epsilon);
         }
     }
 }
