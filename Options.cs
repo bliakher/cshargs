@@ -148,6 +148,7 @@ namespace CShargs
         {
             Alias = alias;
             Targets = targets;
+            ThrowIf.ArgumentNull("Alias", Alias, "Alias name can't be null." );
         }
 
         public string Alias { get; private init; }

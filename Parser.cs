@@ -23,7 +23,7 @@ namespace CShargs
         public string EqualsSymbol => metadata_.Config.EqualsSymbol;
         public OptionFlags OptionFlags => metadata_.Config.OptionFlags;
 
-        private readonly static Dictionary<Type, ParserMetadata> typeMetadata_ = new();
+        private static readonly Dictionary<Type, ParserMetadata> typeMetadata_ = new();
         private readonly HashSet<OptionMetadata> parsedOptions_ = new();
 
         private string[] rawArgs_;

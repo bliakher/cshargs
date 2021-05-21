@@ -28,11 +28,9 @@ namespace CShargs
             } else {
                 Config = new();
             }
-
             createOptionsMetadata();
             injectUseWithReferences();
             rules_ = extractRules();
-
             registerAliases();
         }
 
@@ -42,8 +40,7 @@ namespace CShargs
                 rule.Check(parsedOptions);
             }
         }
-
-
+        
         private void createOptionsMetadata()
         {
             var properties = userType_.GetProperties();
@@ -66,9 +63,8 @@ namespace CShargs
 
         private OptionMetadata createOption(MemberInfo member, IOptionAttribute optionAttribute)
         {
-            var option = new OptionMetadata(this, member, optionAttribute);
+            var option = optionAttribute.CreateMetadata(this, member);
             OptionsByProperty.Add(member.Name, option);
-
             return option;
         }
 
@@ -121,21 +117,28 @@ namespace CShargs
         private void registerAliases()
         {
             var attributes = userType_.GetCustomAttributes<AliasOptionAttribute>();
-            foreach (var attr in attributes) {
-                foreach (string target in attr.Targets) {
+            foreach (var attribute in attributes) {
+                var targetOptions = new List<OptionMetadata>();
+                foreach (string target in attribute.Targets) {
 
                     if (OptionsByProperty.TryGetValue(target, out var option)) {
 
-                        // if (attr.Targets.Count == 1 || option is FlagOption) {
-                        //     TODO:
-                        // } else {
-                        //      throw new ConfigurationException(
-                        //          $"Cant make alias '{attr.Alias}' with multiple targts for non-flag option '{target}'");
-                        // }
-
+                        if (attribute.Targets.Count == 1 || option is FlagOption) {
+                            targetOptions.Add(option);
+                        } else {
+                             throw new ConfigurationException(
+                                 $"Cant make alias '{attribute.Alias}' with multiple targts for non-flag option '{target}'");
+                        }
                     } else {
-                        throw new ConfigurationException($"Alias '{attr.Alias}' for an unknown option '{target}'.");
+                        throw new ConfigurationException($"Alias '{attribute.Alias}' for an unknown option '{target}'.");
                     }
+                }
+                var alias = new AliasOption(this, attribute, targetOptions);
+                if (attribute.LongName != null) {
+                    registerOptionByLongName(alias, attribute.LongName);
+                }
+                else {
+                    registerOptionByShortName(alias, attribute.ShortName);
                 }
             }
         }

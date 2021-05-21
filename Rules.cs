@@ -46,7 +46,7 @@ namespace CShargs
     
     internal class GroupRule : IRule
     {
-        private HashSet<OptionMetadata> groupOptions_;
+        private HashSet<OptionMetadata> groupOptions_ = new();
         private OptionGroupAttribute attribute_;
         public bool Required => attribute_.Required;
 
