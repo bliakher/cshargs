@@ -8,7 +8,7 @@ namespace Tests.Data
     // note: here we assume that "=" in value options are disabled via OptionSettings.ForbidLongEquals
     class VectorArguments : Parser
     {
-        public VectorArguments() : base(OptionSettings.ForbidLongEquals) { }
+        public VectorArguments() : base(OptionFlags.ForbidLongEquals) { }
         public Vector3 Position { get; private set; }
 
         [CustomOption("pos", true, help: "Position of the item.")]

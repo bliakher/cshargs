@@ -34,7 +34,7 @@ namespace CShargs.Examples
         // limits syntax of value options - only space for short options and equal sign for long eg. -f FORMAT, --format=FORMAT
         // all other settings are left at default
         public TimeArguments() : base (
-               OptionSettings.ForbidShortEquals | OptionSettings.ForbidLongSpace
+               OptionFlags.ForbidShortEquals | OptionFlags.ForbidLongSpace
         ) { }
 
         // options without parameters - flags

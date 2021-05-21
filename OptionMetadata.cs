@@ -35,10 +35,10 @@ namespace CShargs
         public virtual string GetRawName(bool preferShort = true)
         {
             if (preferShort && attribute_.ShortName != '\0') {
-                return parserMeta_.Settings.ShortOptionSymbol + attribute_.ShortName;
+                return parserMeta_.Config.ShortOptionSymbol + attribute_.ShortName;
             }
 
-            return parserMeta_.Settings.LongOptionSymbol + LongName;
+            return parserMeta_.Config.LongOptionSymbol + LongName;
         }
 
         public IEnumerable<IRule> ExtractRules()

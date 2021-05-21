@@ -11,7 +11,7 @@ namespace CShargs
         private Type userType_;
         private List<IRule> rules_;
 
-        public ParserSettingsAttribute Settings { get; private set; }
+        public ParserConfigAttribute Config { get; private set; }
         public readonly Dictionary<char, OptionMetadata> OptionsByShort = new();
         public readonly Dictionary<string, OptionMetadata> OptionsByLong = new();
         public readonly Dictionary<string, OptionMetadata> OptionsByProperty = new();
@@ -23,10 +23,10 @@ namespace CShargs
 
         public void LoadAtrributes()
         {
-            if (userType_.IsDefined(typeof(ParserSettingsAttribute))) {
-                Settings = userType_.GetCustomAttribute<ParserSettingsAttribute>();
+            if (userType_.IsDefined(typeof(ParserConfigAttribute))) {
+                Config = userType_.GetCustomAttribute<ParserConfigAttribute>();
             } else {
-                Settings = new();
+                Config = new();
             }
 
             createOptionsMetadata();

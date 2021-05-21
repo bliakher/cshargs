@@ -10,18 +10,18 @@ using TokenReader = CShargs.ListReader<string>;
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("s14-api-testing")]
 namespace CShargs
 {
-    public abstract class Parser
+    public abstract class Parser : IParserConfig
     {
         public Parser()
         {
             metadata_ = getMetadata();
         }
 
-        public string ShortOptionSymbol =>metadata_.Settings
-        public string LongOptionSymbol { get; private init; }
-        public string DelimiterSymbol { get; private init; }
-        public string EqualsSymbol { get; private init; }
-        public OptionSettings Settings { get; private init; }
+        public string ShortOptionSymbol => metadata_.Config.ShortOptionSymbol;
+        public string LongOptionSymbol => metadata_.Config.LongOptionSymbol;
+        public string DelimiterSymbol => metadata_.Config.DelimiterSymbol;
+        public string EqualsSymbol => metadata_.Config.EqualsSymbol;
+        public OptionFlags OptionFlags => metadata_.Config.OptionFlags;
 
         private readonly static Dictionary<Type, ParserMetadata> typeMetadata_ = new();
         private readonly HashSet<OptionMetadata> parsedOptions_ = new();
@@ -101,7 +101,7 @@ namespace CShargs
         {
             int eqIdx = 0;
             string name;
-            if (Settings.HasFlag(OptionSettings.ForbidLongEquals) || (eqIdx = rawArg.IndexOf(EqualsSymbol)) == -1) {
+            if (Settings.HasFlag(OptionFlags.ForbidLongEquals) || (eqIdx = rawArg.IndexOf(EqualsSymbol)) == -1) {
                 name = rawArg.Substring(LongOptionSymbol.Length);
             } else {
                 name = rawArg.Substring(LongOptionSymbol.Length, rawArg.Length - LongOptionSymbol.Length - eqIdx);

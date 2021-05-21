@@ -4,14 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CShargs {
+namespace CShargs
+{
 
     /// <summary>
     /// Enumeration of different option
     /// </summary>
 
     [Flags]
-    public enum OptionSettings {
+    public enum OptionFlags
+    {
 
         /// <summary>
         /// Case sensitive, all syntax variants allowed.
@@ -61,25 +63,36 @@ namespace CShargs {
 
     }
 
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class ParserSettingsAttribute : Attribute {
 
-        public ParserSettingsAttribute(
-            OptionSettings optionSettings = OptionSettings.Default,
+    public interface IParserConfig
+    {
+        OptionFlags OptionFlags { get; }
+        string ShortOptionSymbol { get; }
+        string LongOptionSymbol { get; }
+        string DelimiterSymbol { get; }
+        string EqualsSymbol { get; }
+    }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public class ParserConfigAttribute : Attribute, IParserConfig
+    {
+
+        public ParserConfigAttribute(
+            OptionFlags optionFlags = OptionFlags.Default,
             string shortOptionSymbol = "-",
             string longOptionSymbol = "--",
             string delimiterSymbol = "--",
             string equalsSymbol = "="
             )
         {
-            Settings = optionSettings;
+            OptionFlags = optionFlags;
             ShortOptionSymbol = shortOptionSymbol;
             LongOptionSymbol = longOptionSymbol;
             DelimiterSymbol = delimiterSymbol;
             EqualsSymbol = equalsSymbol;
         }
 
-        public OptionSettings Settings { get; private init; }
+        public OptionFlags OptionFlags { get; private init; }
         public string ShortOptionSymbol { get; private init; }
         public string LongOptionSymbol { get; private init; }
         public string DelimiterSymbol { get; private init; }
