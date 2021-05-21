@@ -24,6 +24,13 @@ namespace CShargs
                 throw new InvalidOperationException(message);
             }
         }
+
+        internal static void ArgumentValue(bool condition, string message = null)
+        {
+            if (condition) {
+                throw new ArgumentException(message);
+            }
+        }
     }
 
     internal static class OperatorsEx

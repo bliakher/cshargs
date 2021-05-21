@@ -37,7 +37,7 @@ namespace CShargs
 
         /// <summary>
         /// If present, <code>-o=5</code> will not be recognised as valid syntax.
-        /// Note: depending on the bit <see cref="ForbidShortNospace"/> value "=5" might be considered.
+        /// Note: depending on the bit <see cref="ForbidShortNoSpace"/> value "=5" might be considered.
         /// </summary>
         ForbidShortEquals = 1 << 3,
 
@@ -49,15 +49,15 @@ namespace CShargs
         /// <summary>
         /// If present, <code>-o5</code> will not be recognised as valid syntax.
         /// </summary>
-        ForbidShortNospace = 1 << 5,
+        ForbidShortNoSpace = 1 << 5,
 
         /// <summary>
-        /// If not present, <code>--option=value</code> will not be recognised as valid syntax.
+        /// If present, <code>--option=value</code> will not be recognised as valid syntax.
         /// </summary>
         ForbidLongEquals = 1 << 6,
 
         /// <summary>
-        /// If not present, <code>--option value</code> will not be recognised as valid syntax.
+        /// If present, <code>--option value</code> will not be recognised as valid syntax.
         /// </summary>
         ForbidLongSpace = 1 << 7,
 
@@ -85,6 +85,10 @@ namespace CShargs
             string equalsSymbol = "="
             )
         {
+            ThrowIf.ArgumentValue(shortOptionSymbol == longOptionSymbol && !optionFlags.HasFlag(CShargs.OptionFlags.ForbidAggregated),
+                "Cannot use same short and long symbol while allowing aggregated short options.");
+            ThrowIf.ArgumentValue(shortOptionSymbol.Length > longOptionSymbol.Length, $"{nameof(shortOptionSymbol)} cannot be longer than {nameof(longOptionSymbol)}.");
+
             OptionFlags = optionFlags;
             ShortOptionSymbol = shortOptionSymbol;
             LongOptionSymbol = longOptionSymbol;

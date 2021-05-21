@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace CShargs
@@ -32,13 +33,15 @@ namespace CShargs
 
         public DependencyRule(OptionMetadata target)
         {
+            Debug.Assert(target.UseWith != null, $"In {nameof(DependencyRule)}, target dependency cannot be null.");
             this.target = target;
         }
 
         public void Check(HashSet<OptionMetadata> parsedOptions)
         {
             var dependency = target.UseWith;
-            if (dependency != null && parsedOptions.Contains(target) && !parsedOptions.Contains(dependency)) {
+
+            if (parsedOptions.Contains(target) && !parsedOptions.Contains(dependency)) {
                 throw new OptionDependencyError(target.LongName, dependency.LongName);
             }
         }

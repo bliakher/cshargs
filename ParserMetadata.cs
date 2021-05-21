@@ -12,7 +12,7 @@ namespace CShargs
         private List<IRule> rules_;
 
         public ParserConfigAttribute Config { get; private set; }
-        public readonly Dictionary<char, OptionMetadata> OptionsByShort = new();
+        public readonly Dictionary<string, OptionMetadata> OptionsByShort = new();
         public readonly Dictionary<string, OptionMetadata> OptionsByLong = new();
         public readonly Dictionary<string, OptionMetadata> OptionsByProperty = new();
 
@@ -45,7 +45,7 @@ namespace CShargs
         {
             var properties = userType_.GetProperties();
             foreach (var property in properties) {
-                var attributes = Attribute.GetCustomAttributes(property, typeof(IOptionAttribute));
+                var attributes = property.GetCustomAttributes().Where(attr => attr is IOptionAttribute).ToArray();
                 if (attributes.Length > 1) {
                     throw new ConfigurationException("One property cannot be annotated with multiple attributes.");
                 }
@@ -81,11 +81,11 @@ namespace CShargs
         {
             Debug.Assert(shortName != '\0');
 
-            if (OptionsByShort.ContainsKey(shortName)) {
+            if (OptionsByShort.ContainsKey(shortName.ToString())) {
                 throw new ConfigurationException($"Option name {shortName} is duplicate.");
             }
 
-            OptionsByShort.Add(shortName, option);
+            OptionsByShort.Add(shortName.ToString(), option);
         }
 
         private void injectUseWithReferences()

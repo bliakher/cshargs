@@ -29,14 +29,11 @@ namespace CShargs.Examples
     
     // sets one alias -u for -p -v
     [AliasOption("u", nameof(Portable), nameof(Verbose))]
+    // limits syntax of value options - only space for short options and equal sign for long eg. -f FORMAT, --format=FORMAT
+    // all other settings are left at default
+    [ParserConfig(OptionFlags.ForbidShortEquals | OptionFlags.ForbidLongSpace)]
     class TimeArguments : Parser 
     {
-        // limits syntax of value options - only space for short options and equal sign for long eg. -f FORMAT, --format=FORMAT
-        // all other settings are left at default
-        public TimeArguments() : base (
-               OptionFlags.ForbidShortEquals | OptionFlags.ForbidLongSpace
-        ) { }
-
         // options without parameters - flags
         // their type must be bool - meaning: present x not present in args
 

@@ -34,17 +34,19 @@ namespace CShargs
         public T Peek() => Peek(0);
         public T Peek(int amount)
         {
-            if (EndOfList) {
-                return default;
+            int i = position_ + amount;
+            if (i >= 0 && i < items_.Count) {
+                return items_[i];
             }
-            return items_[position_ + amount];
+
+            return default;
         }
 
         public IEnumerable<T> ReadToEnd()
         {
             var result = items_.Skip(position_);
             position_ = items_.Count;
-            
+
             return result;
         }
     }

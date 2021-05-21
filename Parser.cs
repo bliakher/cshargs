@@ -47,7 +47,7 @@ namespace CShargs
         /// <summary>
         /// Do the actual parsing.
         ///
-        /// If parsing fails, <see cref="" />
+        /// If parsing fails, <see cref="ParsingException" /> is thrown
         /// </summary>
         public void Parse(string[] args)
         {
@@ -66,7 +66,7 @@ namespace CShargs
                 }
 
                 int position = tokens_.Position;
-                string rawArg = tokens_.Peek();
+                string rawArg = tokens_.Read();
                 bool plain = delimited;
 
                 if (!delimited) {
@@ -74,15 +74,20 @@ namespace CShargs
 
                         delimited = plain = true;
 
-                    } else if (rawArg.StartsWith(LongOptionSymbol)) {
+                    } else if (LongOptionSymbol == ShortOptionSymbol) {
+                        if (!tryParseLong(rawArg) && !tryParseShort(rawArg)) {
+                            throw new UnknownOptionException(rawArg);
+                        }
 
-                        if (!tryParseLong(rawArg) && LongOptionSymbol == ShortOptionSymbol) {
-                            TryParseShort(rawArg);
+                    } else if (rawArg.StartsWith(LongOptionSymbol)) {
+                        if (!tryParseLong(rawArg)) {
+                            throw new UnknownOptionException(rawArg);
                         }
 
                     } else if (rawArg.StartsWith(ShortOptionSymbol)) {
-
-                        TryParseShort(rawArg);
+                        if (!tryParseShort(rawArg)) {
+                            throw new UnknownOptionException(rawArg);
+                        }
                     }
                 }
 
@@ -99,26 +104,51 @@ namespace CShargs
 
         private bool tryParseLong(string rawArg)
         {
+            return tryParse(rawArg,
+                LongOptionSymbol, metadata_.OptionsByLong,
+                OptionFlags.HasFlag(OptionFlags.ForbidLongEquals),
+                OptionFlags.HasFlag(OptionFlags.ForbidLongSpace),
+                true
+                );
+        }
+
+        private bool tryParseShort(string rawArg)
+        {
+            return tryParse(rawArg,
+                ShortOptionSymbol, metadata_.OptionsByShort,
+                OptionFlags.HasFlag(OptionFlags.ForbidShortEquals),
+                OptionFlags.HasFlag(OptionFlags.ForbidShortSpace),
+                OptionFlags.HasFlag(OptionFlags.ForbidShortNoSpace)
+                );
+        }
+
+        private bool tryParse(string rawArg, string introSymbol, IDictionary<string, OptionMetadata> lookup, bool forbidEquals, bool forbidSpace, bool forbidNoSpace)
+        {
             int eqIdx = 0;
             string name;
-            if (Settings.HasFlag(OptionFlags.ForbidLongEquals) || (eqIdx = rawArg.IndexOf(EqualsSymbol)) == -1) {
-                name = rawArg.Substring(LongOptionSymbol.Length);
+            if (forbidEquals || (eqIdx = rawArg.IndexOf(EqualsSymbol)) == -1) {
+                name = rawArg.Substring(introSymbol.Length);
             } else {
-                name = rawArg.Substring(LongOptionSymbol.Length, rawArg.Length - LongOptionSymbol.Length - eqIdx);
+                name = rawArg.Substring(introSymbol.Length, rawArg.Length - introSymbol.Length - eqIdx);
             }
 
-            if (metadata_.OptionsByLong.TryGetValue(name, out var option)) {
+            if (lookup.TryGetValue(name, out var option)) {
 
-                option.ParseAndSet(this, tokens_);
+                ParseOption(option);
                 return true;
             } else {
                 return false;
             }
         }
 
-        private bool TryParseShort(string rawArg)
+        internal void ParseOption(OptionMetadata option)
         {
-            return false; //ToDo
+            if (option.GetType() != typeof(FlagOption) && parsedOptions_.Contains(option)) {
+                throw new DuplicateOptionException(tokens_.Peek(-1));
+            }
+
+            option.Parse(this, tokens_);
+            parsedOptions_.Add(option);
         }
 
         private ParserMetadata getMetadata()

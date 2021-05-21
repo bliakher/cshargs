@@ -21,6 +21,8 @@ namespace CShargs
 
         public OptionMetadata(ParserMetadata parserMeta, MemberInfo member, IOptionAttribute attribute)
         {
+            ThrowIf.ArgumentNull(nameof(parserMeta), parserMeta);
+            ThrowIf.ArgumentNull(nameof(member), member);
             ThrowIf.ArgumentNull(nameof(attribute), attribute);
 
             member_ = member;
@@ -29,8 +31,8 @@ namespace CShargs
         }
 
 
-        public abstract object Parse(TokenReader tokens);
-        public abstract void SetValue(object instance, object value);
+        public abstract void Parse(Parser parser, TokenReader tokens);
+        protected abstract void SetValue(object instance, object value);
 
         public virtual string GetRawName(bool preferShort = true)
         {
@@ -61,12 +63,12 @@ namespace CShargs
         public FlagOption(ParserMetadata parserMeta, PropertyInfo prop, FlagOptionAttribute attribute)
             : base(parserMeta, prop, attribute) { }
 
-        public override object Parse(TokenReader reader)
+        public override void Parse(Parser userParser, TokenReader reader)
         {
-            return true;
+            SetValue(userParser, true);
         }
 
-        public override void SetValue(object instance, object value)
+        protected override void SetValue(object instance, object value)
             => Property.SetValue(instance, value);
     }
 
@@ -78,25 +80,38 @@ namespace CShargs
         public ValueOption(ParserMetadata parserMeta, PropertyInfo prop, ValueOptionAttribute attribute)
             : base(parserMeta, prop, attribute) { }
 
-        public override object Parse(TokenReader tokens)
+        public override void Parse(Parser parser, TokenReader tokens)
         {
             Debug.Assert(tokens.Position > 0);
             string first = tokens.Peek(-1);
-            string value;
+            string valueStr;
             int index;
             // TODO: check parser options
             if ((index = first.IndexOf('=')) != -1) {
-                value = first.Substring(index + 1);
+                valueStr = first.Substring(index + 1);
             } else {
-                value = tokens.Read();
+                if (tokens.EndOfList) {
+                    throw new ValueOptionFormatException(first, new("Missing value."));
+                }
+                valueStr = tokens.Read();
             }
 
-            // ex: int.Parse(value)
-            return InvokeStaticParseMethod(value);
+            object value;
+            if (Property.PropertyType == typeof(string)) {
+                value = valueStr;
+            } else {
+                try {
+                    // ex: int.Parse(...)
+                    value = InvokeStaticParseMethod(valueStr);
+                } catch (FormatException ex) {
+                    throw new ValueOptionFormatException(first, ex);
+                }
+            }
+            SetValue(parser, value);
         }
 
-        public override void SetValue(object instance, object value)
-            => Property.SetValue(instance, value);
+        protected override void SetValue(object userObject, object value)
+            => Property.SetValue(userObject, value);
 
         private object InvokeStaticParseMethod(string value)
         {
@@ -133,10 +148,10 @@ namespace CShargs
         public CustomOption(ParserMetadata parserMeta, MethodInfo method, CustomOptionAttribute attribute)
             : base(parserMeta, method, attribute) { }
 
-        public override object Parse(TokenReader tokens)
-            => tokens.Peek(-1);
+        public override void Parse(Parser parser, TokenReader tokens)
+            => SetValue(parser, tokens.Peek(-1));
 
-        public override void SetValue(object instance, object value)
+        protected override void SetValue(object instance, object value)
             => Method.Invoke(instance, new[] { value });
     }
 
@@ -146,16 +161,16 @@ namespace CShargs
         public VerbOption(ParserMetadata parserMeta, PropertyInfo prop, VerbOptionAttribute attribute)
             : base(parserMeta, prop, attribute) { }
 
-        public override object Parse(TokenReader tokens)
+        public override void Parse(Parser parser, TokenReader tokens)
         {
             var subparser = (Parser)Activator.CreateInstance(Property.PropertyType);
 
             string[] rest = tokens.ReadToEnd().ToArray();
             subparser.Parse(rest);
-            return subparser;
+            SetValue(parser, subparser);
         }
 
-        public override void SetValue(object instance, object value)
+        protected override void SetValue(object instance, object value)
             => Property.SetValue(instance, value);
     }
 
@@ -169,12 +184,14 @@ namespace CShargs
             Targets = targets.ToArray();
         }
 
-        public override object Parse(TokenReader tokens)
+        public override void Parse(Parser parser, TokenReader tokens)
         {
-            throw new NotImplementedException();
+            foreach (var target in Targets) {
+                parser.ParseOption(target);
+            }
         }
 
-        public override void SetValue(object instance, object value)
+        protected override void SetValue(object instance, object value)
         {
             throw new NotImplementedException();
         }
