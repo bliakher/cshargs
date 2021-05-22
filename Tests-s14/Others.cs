@@ -13,59 +13,71 @@ namespace s14_api_testing
     {
         class Args : Parser
         {
-            [FlagOption("option", shortName: 'o', help: "This is help message")]
+            public const string HelpMessage = "This is help message";
+
+            [FlagOption("option", shortName: 'o', help: HelpMessage)]
             public bool Option { get; set; }
 
             [FlagOption("lastflag", shortName: 'l')]
             public bool LastFlag { get; set; }
         }
 
-        class BadParser : Parser
+        class BadParserDuplicateLong : Parser
         {
-            [FlagOption("zelenina", shortName: 'c', 
-                help: "Test invalid parser construction\n" +
-                "It should throw exception\n" +
-                "Intended behaviour was not specified in documentation.")]
+            [FlagOption("zelenina", shortName: 'c',
+                help: "Test invalid parser construction")]
             public bool Cibula { get; set; }
 
             [FlagOption("zelenina", shortName: 'm', help: "Help string")]
             public bool Mrkva { get; set; }
         }
 
+        class BadParserDuplicateShort : Parser
+        {
+            [FlagOption("cibula", shortName: 'm',
+                help: "Test invalid parser construction")]
+            public bool Cibula { get; set; }
+
+            [FlagOption("mrkva", shortName: 'm', help: "Help string")]
+            public bool Mrkva { get; set; }
+        }
+
         [Fact]
-        public void HelpTextShouldBePresentInGeneratedHelp()
+        public void HelpWordsPresentInGeneratedHelp()
         {
             // Arrange
             var CLParser = new Args();
             // Assert
             Assert.True(CLParser.GenerateHelp().Length > 0);
+            foreach (var word in Args.HelpMessage.Split(' ')) {
+                Assert.Contains(word, Args.HelpMessage);
+            }
         }
 
         [Theory]
         [InlineData("--")]
         [InlineData("--", "foo")]
         [InlineData("--", "foo", "bar")]
-        public void PlainArgumentsShouldBeReturned(params string[] args)
+        public void PostDelimiterPlainArgsCollected(params string[] args)
         {
             // Arrange
-            var CLParser = new Args();
+            var parser = new Args();
 
-            // Act & Assign
-            foreach(var arg in args)
-            {
-                Assert.Contains(arg, CLParser.PlainArgs);
-            }
+            // Act
+            parser.Parse(args);
+
+            // Assert
+            parser.PlainArgs.SequenceEqual(args.Skip(1));
         }
 
         [Fact]
-        public void DuplicateLongOptionShouldThrowConfigurationExceptiom()
+        public void DuplicateLongThrows()
         {
             // Arrange
             string[] args = { };
 
             // Assert
-            Assert.Throws<ConfigurationException>(() => { var CLParser = new BadParser(); });
-            //ShortOption duplicate should be handled exactly same
+            Assert.Throws<ConfigurationException>(() => { var CLParser = new BadParserDuplicateLong(); });
         }
 
         [Fact]
