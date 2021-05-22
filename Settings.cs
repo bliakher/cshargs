@@ -61,6 +61,10 @@ namespace CShargs
         /// </summary>
         ForbidLongSpace = 1 << 7,
 
+        /// <summary>
+        /// If present, enum types will be parsed with ignoreCase=true in <see cref="Enum.Parse(Type, string, bool)"/>
+        /// </summary>
+        EnumCaseInsensitive = 1 << 8,
     }
 
 
@@ -103,4 +107,3 @@ namespace CShargs
         public string EqualsSymbol { get; private init; }
     }
 }
-

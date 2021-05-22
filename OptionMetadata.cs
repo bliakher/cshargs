@@ -121,12 +121,26 @@ namespace CShargs
                 }
 
                 var propType = Property.PropertyType;
-                var methods = from method in propType.GetMethods(BindingFlags.Static)
-                              where method.Name == "Parse"
-                              where method.ReturnType == propType
-                              let param = method.GetParameters()
-                              where param.Length == 1 && param[0].ParameterType == typeof(string)
-                              select method;
+
+                IEnumerable<MethodInfo> methods;
+
+                if (Property.PropertyType.IsEnum) {
+
+                    try {
+                        return Enum.Parse(Property.PropertyType, value, parserMeta_.Config.OptionFlags.HasFlag(OptionFlags.EnumCaseInsensitive));
+                    } catch (ArgumentException ex) {
+                        throw new FormatException(ex.Message);
+                    }
+
+                } else {
+                    var allMethods = propType.GetMethods(BindingFlags.Public | BindingFlags.Static);
+                    var parseMethods = allMethods.Where(m => m.Name == "Parse");
+                    var typedMethods = parseMethods.Where(m => m.ReturnType == propType);
+                    methods = typedMethods.Where(m => {
+                        var param = m.GetParameters().ToArray();
+                        return param.Length == 1 && param[0].ParameterType == typeof(string);
+                    });
+                }
 
                 if (!methods.Any()) {
                     throw new ConfigurationException(
@@ -138,7 +152,11 @@ namespace CShargs
                 staticParse_ = Delegate.CreateDelegate(delegateType, ParseMethod);
             }
 
-            return staticParse_.DynamicInvoke(value);
+            try {
+                return staticParse_.DynamicInvoke(value);
+            } catch (TargetInvocationException ex) {
+                throw ex.InnerException;
+            }
         }
     }
 

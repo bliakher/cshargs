@@ -12,3 +12,11 @@ TODO list:
     + parsing
 + split attributes to POCO and parser
 + groups
+
+
+TESTS:
+- check different case-sensitivity cases
+    - config:short-case-insensitive
+        - short single wrongcase accepted
+        - 
+    

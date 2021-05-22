@@ -11,6 +11,11 @@ namespace s14_api_testing
 {
     public class RetrieveValues
     {
+        enum MyEnum
+        {
+            One, Two, Three
+        }
+
         class Args : Parser
         {
             [ValueOption("alpha", shortName: 'a', help: "Specify number alpha")]
@@ -27,6 +32,16 @@ namespace s14_api_testing
 
             [ValueOption("epsilon", shortName: 'e', help: "Specify long epsilon")]
             public long Epsilon { get; set; }
+
+            [ValueOption("enum", shortName: 'n')]
+            public MyEnum EnumVal { get; set; }
+        }
+
+        [ParserConfig(OptionFlags.EnumCaseInsensitive)]
+        class EnumArgsCaseInsensitive : Parser
+        {
+            [ValueOption("enum", shortName: 'n')]
+            public MyEnum EnumVal { get; set; }
         }
 
         [Fact]
@@ -70,6 +85,17 @@ namespace s14_api_testing
             Assert.True(CLParser.Gamma);
         }
         [Fact]
+        public void InvalidBoolOptionValueFails()
+        {
+            // Arrange
+            string[] args = { "-g", "bambam" };
+            var CLParser = new Args();
+
+            // Act
+            Assert.Throws<ValueOptionFormatException>(() => CLParser.Parse(args));
+        }
+
+        [Fact]
         public void ReturnShortOptionValue()
         {
             // Arrange
@@ -86,14 +112,72 @@ namespace s14_api_testing
         public void ReturnLongOptionValue()
         {
             // Arrange
-            string[] args = { "-e", "5000000000" };
+            long iValue = 897465189465L;
+            string[] args = { "-e", iValue.ToString() };
             var CLParser = new Args();
 
             // Act
             CLParser.Parse(args);
 
             // Assert
-            Assert.Equal(5000000L, CLParser.Epsilon);
+            Assert.Equal(iValue, CLParser.Epsilon);
+        }
+
+        [Fact]
+        public void ValidEnumOptionValue()
+        {
+            // Arrange
+            MyEnum val = MyEnum.Three;
+            string[] args = { "--enum", val.ToString() };
+            var CLParser = new Args();
+
+            // Act
+            CLParser.Parse(args);
+
+            // Assert
+            Assert.Equal(val, CLParser.EnumVal);
+        }
+        [Fact]
+        public void CaseInsEnumOptionValue()
+        {
+            // Arrange
+            MyEnum val = MyEnum.Three;
+            string[] args = { "--enum", val.ToString() };
+            var CLParser = new Args();
+
+            // Act
+            CLParser.Parse(args);
+
+            // Assert
+            Assert.Equal(val, CLParser.EnumVal);
+        }
+
+        [Fact]
+        public void InvalidEnumValueThrows()
+        {
+            // Arrange
+            MyEnum val = MyEnum.Three;
+            string[] args = { "--enum", "threeeeeeeeeeee" };
+            var CLParser = new Args();
+
+            // Act
+            Assert.Throws<ValueOptionFormatException>(() => CLParser.Parse(args));
+        }
+
+
+        [Fact]
+        public void InvalidCaseEnumValueThrows()
+        {
+            // Arrange
+            MyEnum val = MyEnum.Three;
+            string[] args = { "--enum", val.ToString().ToUpper() };
+            var CLParser = new EnumArgsCaseInsensitive();
+
+            // Act
+            CLParser.Parse(args);
+
+            // Assert
+            Assert.Equal(val, CLParser.EnumVal);
         }
     }
 }
