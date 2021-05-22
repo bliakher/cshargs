@@ -22,7 +22,6 @@ namespace CShargs
         public OptionMetadata(ParserMetadata parserMeta, MemberInfo member, IOptionAttribute attribute)
         {
             ThrowIf.ArgumentNull(nameof(parserMeta), parserMeta);
-            ThrowIf.ArgumentNull(nameof(member), member);
             ThrowIf.ArgumentNull(nameof(attribute), attribute);
 
             member_ = member;

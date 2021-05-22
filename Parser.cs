@@ -85,7 +85,13 @@ namespace CShargs
                         }
 
                     } else if (rawArg.StartsWith(ShortOptionSymbol)) {
-                        if (!tryParseShort(rawArg)) {
+                        if (rawArg.Length - ShortOptionSymbol.Length > 1) { // more options aggregated
+                            if (OptionFlags.HasFlag(OptionFlags.ForbidAggregated)) {
+                                throw new OptionAggregationException("It is forbidden to aggregate options.");
+                            }
+                            parseAggregated(rawArg, metadata_.OptionsByShort);
+                        }
+                        else if (!tryParseShort(rawArg)) { // only one short option
                             throw new UnknownOptionException(rawArg);
                         }
                     }
@@ -120,6 +126,23 @@ namespace CShargs
                 OptionFlags.HasFlag(OptionFlags.ForbidShortSpace),
                 OptionFlags.HasFlag(OptionFlags.ForbidShortNoSpace)
                 );
+        }
+
+        private void parseAggregated(string rawArg, IDictionary<string, OptionMetadata> lookup)
+        {
+            // remove option symbol from the start
+            var nameAgr = rawArg.Substring(ShortOptionSymbol.Length, rawArg.Length - ShortOptionSymbol.Length);
+            foreach (char name in nameAgr) {
+                if (lookup.TryGetValue(name.ToString(), out var option)) {
+                    if (option.GetType() != typeof(FlagOption)) {
+                        throw new OptionAggregationException("Options with parameters cannot be aggregated");
+                    }
+                    ParseOption(option);
+                }
+                else {
+                    throw new UnknownOptionException(name.ToString());
+                }
+            }
         }
 
         private bool tryParse(string rawArg, string introSymbol, IDictionary<string, OptionMetadata> lookup, bool forbidEquals, bool forbidSpace, bool forbidNoSpace)

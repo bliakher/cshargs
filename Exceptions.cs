@@ -86,6 +86,15 @@ namespace CShargs
     }
 
     /// <summary>
+    /// Aggregation of options can be used only on short FlagOptions.
+    /// </summary>
+    public class OptionAggregationException : ParsingException
+    {
+        internal OptionAggregationException(string message)
+            : base(message){}
+    }
+
+    /// <summary>
     /// Thrown when a a useWith dependency of option is missing
     /// </summary>
     public class OptionDependencyError : OptionException
