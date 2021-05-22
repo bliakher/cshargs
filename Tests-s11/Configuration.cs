@@ -14,8 +14,9 @@ namespace Tests
     {
         [Theory]
         [InlineData(new string[] { "--verbose", "command1", "command2", "command3" }, 3)]
+        [InlineData(new string[] { "command1", "command2", "--verbose", "command3" }, 3)]
         [InlineData(new string[] { "--verbose", "--", "command1", "command2" }, 2)]
-        [InlineData(new string[] { "--", "--verbose", "command1", "command2" }, 3)]
+        [InlineData(new string[] { "--", "--verbose", "command2", "command3" }, 3)]
         public void HasAllPlainArgumentsParsed(string[] args, int plainArgsCount)
         {
             // Arrange
@@ -32,7 +33,7 @@ namespace Tests
         [InlineData(new string[] { "--verbose", "command1", "command2" }, 2)]
         [InlineData(new string[] { "--verbose", "--", "command1", "command2" }, 2)]
         [InlineData(new string[] { "--", "--verbose", "command1" }, 2)]
-        public void DoesInvalidNumberOfPlainArgumentsThrowException(string[] args, int actualPlainArgsCount) // second parameter only prevents InlineData error
+        public void InvalidNumberOfPlainArgumentsThrows(string[] args, int actualPlainArgsCount) // second parameter only prevents InlineData error
         {
             // Arrange
             var arguments = new FixedCountPlainArguments();
