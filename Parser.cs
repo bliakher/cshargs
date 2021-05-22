@@ -132,11 +132,18 @@ namespace CShargs
         {
             // remove option symbol from the start
             var nameAgr = rawArg.Substring(ShortOptionSymbol.Length, rawArg.Length - ShortOptionSymbol.Length);
+
             foreach (char name in nameAgr) {
                 if (lookup.TryGetValue(name.ToString(), out var option)) {
-                    if (option.GetType() != typeof(FlagOption)) {
+                    
+                    var targetOptionType = (option is AliasOption aliasOp 
+                        ? aliasOp.Targets.First() 
+                        : option).GetType();
+                    
+                    if (targetOptionType != typeof(FlagOption)) {
                         throw new OptionAggregationException("Options with parameters cannot be aggregated");
                     }
+
                     ParseOption(option);
                 }
                 else {
