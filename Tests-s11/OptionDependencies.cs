@@ -19,7 +19,7 @@ namespace Tests
             var arguments = new OptionDependenciesArguments();
 
             // Act and assert
-            Assert.Throws<ParsingException>(() => arguments.Parse(new string[] { "-v", "command"}));
+            Assert.Throws<OptionDependencyError>(() => arguments.Parse(new string[] { "-v", "command"})); // missing -p
         }
     }
 }
