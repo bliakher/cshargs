@@ -115,7 +115,7 @@ namespace CShargs
 
     public class PlainArgsCountException : ParsingException
     {
-        internal PlainArgsCountException(string message, Exception inner)
+        internal PlainArgsCountException(string message, Exception inner = null)
             : base(message, inner) { }
     }
 }

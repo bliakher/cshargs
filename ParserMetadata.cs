@@ -14,6 +14,7 @@ namespace CShargs
         public ParserConfigAttribute Config { get; private set; }
         public readonly Dictionary<string, OptionMetadata> OptionsByShort = new();
         public readonly Dictionary<string, OptionMetadata> OptionsByLong = new();
+        public readonly Dictionary<string, OptionMetadata> VerbOptions = new();
         public readonly Dictionary<string, OptionMetadata> OptionsByProperty = new();
 
         public ParserMetadata(Type userType)
@@ -57,9 +58,14 @@ namespace CShargs
                     var attrib = (IOptionAttribute)attributes[0];
                     var option = createOption(property, attrib);
 
-                    registerOptionByLongName(option, attrib.LongName);
-                    if (attrib.ShortName != '\0') {
-                        registerOptionByShortName(option, attrib.ShortName);
+                    if (option is VerbOption verbOption) {
+                        registerVerbOption(verbOption, option.LongName);
+                    }
+                    else {
+                        registerOptionByLongName(option, attrib.LongName);
+                        if (attrib.ShortName != '\0') {
+                            registerOptionByShortName(option, attrib.ShortName);
+                        }
                     }
                 }
             }
@@ -72,10 +78,23 @@ namespace CShargs
             return option;
         }
 
+        private void registerVerbOption(VerbOption option, string name)
+        {
+            Debug.Assert(name != null);
+            
+            if (VerbOptions.ContainsKey(name)) {
+                throw new ConfigurationException($"Verb option name {name} is duplicate.");
+            }
+            if (Config.OptionFlags.HasFlag(OptionFlags.LongCaseInsensitive)) {
+                name = name.ToUpper();
+            }
+            VerbOptions.Add(name, option);
+        }
+
         private void registerOptionByLongName(OptionMetadata option, string longName)
         {
             Debug.Assert(longName != null);
-
+            
             if (OptionsByLong.ContainsKey(longName)) {
                 throw new ConfigurationException($"Option name {longName} is duplicate.");
             }

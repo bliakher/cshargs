@@ -22,6 +22,24 @@ namespace CShargs
         public string EqualsSymbol => metadata_.Config.EqualsSymbol;
         public OptionFlags OptionFlags => metadata_.Config.OptionFlags;
 
+        /// <summary>
+        /// Count of <see cref="PlainArgs"/> will be checked against this at the end of the parsing.
+        /// </summary>
+        protected virtual int PlainArgsRequired => PlainArgs.Count;
+
+        private int skip;
+        /// <summary>
+        /// The parser will skip next n arguments.
+        /// </summary>
+        protected int Skip {
+            get => skip;
+            set {
+                if (value >= 0) {
+                    skip = value;
+                } else throw new ArgumentOutOfRangeException();
+            }
+        }
+
         private static readonly Dictionary<Type, ParserMetadata> typeMetadata_ = new();
         private readonly HashSet<OptionMetadata> parsedOptions_ = new();
 
@@ -71,7 +89,7 @@ namespace CShargs
                 if (!delimited) {
                     if (rawArg == DelimiterSymbol) {
 
-                        delimited = plain = true;
+                        delimited = true;
 
                     } else if (LongOptionSymbol == ShortOptionSymbol) {
                         if (!tryParseLong(rawArg) && !tryParseShort(rawArg)) {
@@ -106,19 +124,31 @@ namespace CShargs
 
                         } else if (!tryParseShort(rawArg)) { // only one short option
                             throw new UnknownOptionException(rawArg);
-                        }
+                        } 
+                    } 
+                    else {
+                        bool isVerb = tryParseVerb(rawArg);
+                        plain = !isVerb; // if not verb than plain
                     }
                 }
 
                 if (plain) {
-                    plainArgs_.Add(tokens_.Read());
+                    plainArgs_.Add(rawArg);
                 }
 
                 Debug.Assert(tokens_.Position > position, "No tokens have been consumed.");
             }
-
+            checkPlainArgsCount();
             metadata_.CheckRules(parsedOptions_);
 
+        }
+
+        private void checkPlainArgsCount()
+        {
+            if (PlainArgsRequired != PlainArgs.Count) {
+                throw new PlainArgsCountException(
+                    $"{PlainArgsRequired} plain arguments required but {PlainArgs.Count} given.");
+            }
         }
 
         private bool isFirstCharShortFlagOption(string rawArg)
@@ -213,6 +243,15 @@ namespace CShargs
             return false;
         }
 
+        private bool tryParseVerb(string rawArg)
+        {
+            bool caseInsensitive = OptionFlags.HasFlag(OptionFlags.ShortCaseInsensitive);
+            if (caseInsensitive) {
+                rawArg = rawArg.ToUpper();
+            }
+            return tryParse(rawArg, null, metadata_.VerbOptions);
+        }
+
         private void parseAggregated(string rawArg)
         {
             var lookup = metadata_.OptionsByShort;
@@ -254,7 +293,7 @@ namespace CShargs
             }
             return typeMetadata_[type];
         }
-
+        
         public string GenerateHelp()
         {
             StringWriter sw = new();
@@ -262,23 +301,5 @@ namespace CShargs
             return sw.ToString();
         }
         public void GenerateHelp(TextWriter output) { }
-
-        /// <summary>
-        /// Count of <see cref="PlainArgs"/> will be checked against this at the end of the parsing.
-        /// </summary>
-        protected virtual int PlainArgsRequired => PlainArgs.Count;
-
-        private int skip;
-        /// <summary>
-        /// The parser will skip next n arguments.
-        /// </summary>
-        protected int Skip {
-            get => skip;
-            set {
-                if (value >= 0) {
-                    skip = value;
-                } else throw new ArgumentOutOfRangeException();
-            }
-        }
     }
 }

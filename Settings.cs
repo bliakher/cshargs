@@ -89,9 +89,14 @@ namespace CShargs
             string equalsSymbol = "="
             )
         {
-            ThrowIf.ArgumentValue(shortOptionSymbol == longOptionSymbol && !optionFlags.HasFlag(CShargs.OptionFlags.ForbidAggregated),
-                "Cannot use same short and long symbol while allowing aggregated short options.");
-            ThrowIf.ArgumentValue(shortOptionSymbol.Length > longOptionSymbol.Length, $"{nameof(shortOptionSymbol)} cannot be longer than {nameof(longOptionSymbol)}.");
+            if (shortOptionSymbol == longOptionSymbol && !optionFlags.HasFlag(CShargs.OptionFlags.ForbidAggregated)) {
+                throw new ConfigurationException(
+                    "Cannot use same short and long symbol while allowing aggregated short options.");
+            }
+            if (shortOptionSymbol.Length > longOptionSymbol.Length) {
+                throw new ConfigurationException(
+                    $"{nameof(shortOptionSymbol)} cannot be longer than {nameof(longOptionSymbol)}.");
+            }
 
             OptionFlags = optionFlags;
             ShortOptionSymbol = shortOptionSymbol;
