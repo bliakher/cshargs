@@ -29,23 +29,21 @@ namespace Tests
         }
 
         [Fact]
-        public void DoesMissingMandatoryOptionGroupOptionThrowException()
+        public void MissingMandatoryOptionGroupThrows()
         {
             // Arrange
             var arguments = new CountGroupArguments();
 
             // Act and assert
-            Assert.Throws<MissingOptionGroupException>(() => arguments.Parse(new string[] { "--verbose", "file" }));
+            Assert.Throws<MissingGroupException>(() => arguments.Parse(new string[] { "--verbose", "file" }));
         }
 
         [Fact]
-        public void DoesSettingRequiredOptionInsideOptionGroupThrowException()
+        public void RequiredOptionInsideOptionGroupThrows()
         {
             // Arrange
-            var arguments = new InvalidConfigurationGroupArguments();
-
             // Act and assert
-            Assert.Throws<ConfigurationException>(() => arguments.Parse(new string[] { "--input", "file" }));
+            Assert.Throws<ConfigurationException>(() => new InvalidConfigurationGroupArguments());
         }
     }
 }

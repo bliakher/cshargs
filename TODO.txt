@@ -12,7 +12,8 @@ TODO list:
     + parsing
 + split attributes to POCO and parser
 + groups
-
+    - required in group throws
+    - group use with
 
 TESTS:
 + check different case-sensitivity cases

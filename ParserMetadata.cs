@@ -43,13 +43,17 @@ namespace CShargs
         
         private void createOptionsMetadata()
         {
-            var properties = userType_.GetProperties();
+            var properties = userType_.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var property in properties) {
                 var attributes = property.GetCustomAttributes().Where(attr => attr is IOptionAttribute).ToArray();
                 if (attributes.Length > 1) {
                     throw new ConfigurationException("One property cannot be annotated with multiple attributes.");
                 }
                 if (attributes.Length == 1) {
+                    if (property.SetMethod.IsPrivate) {
+                        throw new ConfigurationException($"Option property '{property.Name}' cannot have private setter.");
+                    }
+
                     var attrib = (IOptionAttribute)attributes[0];
                     var option = createOption(property, attrib);
 

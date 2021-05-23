@@ -44,4 +44,10 @@ namespace Tests.Data
         [FlagOption("execute", shortName: 'r')]
         public bool Execute { get; set; }
     }
+
+    class BadParserPrivateOptions : Parser
+    {
+        [FlagOption("execute", shortName: 'r')]
+        bool Execute { get; set; }
+    }
 }

@@ -53,14 +53,20 @@ namespace CShargs
         private OptionGroupAttribute attribute_;
         public bool Required => attribute_.Required;
 
-        public GroupRule(OptionGroupAttribute groupAttribute, Dictionary<string, OptionMetadata> optionProperties)
+        public GroupRule(OptionGroupAttribute groupAttribute, IDictionary<string, OptionMetadata> optionProperties)
         {
             attribute_ = groupAttribute;
             foreach (var name in attribute_.OptionGroup) {
                 if (!optionProperties.ContainsKey(name)) {
-                    throw new ConfigurationException($"Error in option groups, property name {name} not known.");
+                    throw new ConfigurationException($"Error in option groups, property name '{name}' not known.");
                 }
-                groupOptions_.Add(optionProperties[name]);
+                var option = optionProperties[name];
+
+                if (option.Required) {
+                    throw new ConfigurationException($"Can't have required option '{option.LongName}' in required group.");
+                }
+
+                groupOptions_.Add(option);
             }
         }
         public void Check(ICollection<OptionMetadata> parsedOptions)
@@ -72,7 +78,7 @@ namespace CShargs
                 }
             }
             if (Required && count == 0) {
-                throw new MissingGroupOptionException(getOptionNames());
+                throw new MissingGroupException(getOptionNames());
             }
             if (count > 1) {
                 throw new MultipleOptionsFromExclusiveGroup(getOptionNames());

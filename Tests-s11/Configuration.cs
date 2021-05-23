@@ -84,5 +84,11 @@ namespace Tests
         {
             Assert.Throws<ConfigurationException>(() => { var p = new BadParserAliasConflict(); });
         }
+
+        [Fact]
+        public void PrivateOptionsSetterThrows()
+        {
+            Assert.Throws<ConfigurationException>(() => { var p = new BadParserPrivateOptions(); });
+        }
     }
 }

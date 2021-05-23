@@ -79,9 +79,13 @@ namespace CShargs
             : base(optionName, $"Missing value for option '{optionName}'.", innerException) { }
     }
 
-    public class MissingGroupOptionException : ParsingException
+
+    /// <summary>
+    /// Thrown when no option from a required option group is used.
+    /// </summary>
+    public class MissingGroupException : ParsingException
     {
-        internal MissingGroupOptionException(IEnumerable<string> groupOptions, Exception innerException = null)
+        internal MissingGroupException(IEnumerable<string> groupOptions, Exception innerException = null)
             : base($"Missing option from required group ( {String.Join(" | ", groupOptions)} )", innerException) { }
     }
 
@@ -113,22 +117,5 @@ namespace CShargs
     {
         internal PlainArgsCountException(string message, Exception inner)
             : base(message, inner) { }
-    }
-
-    /// <summary>
-    /// Thrown when no option from a required option group is used.
-    /// </summary>
-    public class MissingOptionGroupException : ParsingException
-    {
-
-        /// <summary>
-        /// Name of the group in question
-        /// </summary>
-        public string GroupName { get; private set; }
-        internal MissingOptionGroupException(string groupName, Exception innerException = null)
-            : base($"One of options in group 'groupName' must be specified.", innerException)
-        {
-            GroupName = groupName;
-        }
     }
 }
