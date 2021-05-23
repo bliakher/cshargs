@@ -41,8 +41,13 @@ namespace CShargs
                 rule.Check(parsedOptions);
             }
         }
-        
+
         private void createOptionsMetadata()
+        {
+            createOptionsMetadataProperties();
+            createOptionMetadataCustom();
+        }
+        private void createOptionsMetadataProperties()
         {
             var properties = userType_.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var property in properties) {
@@ -66,6 +71,26 @@ namespace CShargs
                         if (attrib.ShortName != '\0') {
                             registerOptionByShortName(option, attrib.ShortName);
                         }
+                    }
+                }
+            }
+        }
+
+        private void createOptionMetadataCustom()
+        {
+            var methods = userType_.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (var method in methods) {
+                var attributes = method.GetCustomAttributes().Where(attr => attr is CustomOptionAttribute).ToArray();
+                if (attributes.Length > 1) {
+                    throw new ConfigurationException("One property cannot be annotated with multiple attributes.");
+                }
+                if (attributes.Length == 1) {
+                    var attrib = (CustomOptionAttribute)attributes[0];
+                    var option = createOption(method, attrib);
+                
+                    registerOptionByLongName(option, attrib.LongName);
+                    if (attrib.ShortName != '\0') {
+                        registerOptionByShortName(option, attrib.ShortName);
                     }
                 }
             }
