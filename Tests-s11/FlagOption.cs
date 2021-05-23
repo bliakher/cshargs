@@ -32,8 +32,8 @@ namespace Tests
         [InlineData(new string[] { "-r" }, true)]
         [InlineData(new string[] { "-R" }, true)]
         [InlineData(new string[] { "--force", "-R", "file" }, true)]
-        [InlineData(new string[] { "-rR" }, false)] // really false?
-        public void IsFlagOptionWithOneAliasPresent(string[] args, bool optionParsed) // look into
+        [InlineData(new string[] { "-rR" }, true)] 
+        public void IsFlagOptionWithOneAliasPresent(string[] args, bool optionParsed)
         {
             // Arrange
             var arguments = new AliasFlagArguments();

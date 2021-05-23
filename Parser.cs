@@ -124,7 +124,15 @@ namespace CShargs
         private bool isFirstCharShortFlagOption(string rawArg)
         {
             char first = rawArg[ShortOptionSymbol.Length];
-            return metadata_.OptionsByShort.TryGetValue(first.ToString(), out OptionMetadata option) && option is FlagOption;
+            return metadata_.OptionsByShort.TryGetValue(first.ToString(), out var option) && isTargetFlagOption(option);
+        }
+
+        private bool isTargetFlagOption(OptionMetadata option)
+        {
+            var targetOptionType = (option is AliasOption aliasOp
+                    ? aliasOp.Targets.First()
+                    : option).GetType();
+            return targetOptionType == typeof(FlagOption);
         }
 
         private bool tryParseLong(string rawArg)
@@ -215,12 +223,8 @@ namespace CShargs
             foreach (char name in names) {
                 if (lookup.TryGetValue(name.ToString(), out var option)) {
 
-                    var targetOptionType = (option is AliasOption aliasOp
-                        ? aliasOp.Targets.First()
-                        : option).GetType();
-
-                    if (targetOptionType != typeof(FlagOption)) {
-                        throw new OptionAggregationException("Options with parameters cannot be aggregated");
+                    if (!isTargetFlagOption(option)) {
+                        throw new OptionAggregationException("Only flags can be aggregated");
                     }
 
                     ParseOption(option, null);

@@ -14,7 +14,7 @@ namespace Tests
     {
         [Theory]
         [InlineData(new string[] { "--output=File.out" }, "File.out")]
-        [InlineData(new string[] { "-o File.out" }, "File.out")]
+        [InlineData(new string[] { "-o", "File.out" }, "File.out")]
         [InlineData(new string[] { "-oFile.out" }, "File.out")]
         [InlineData(new string[] { "command" }, null)]
         public void ValueOptionStringParsed(string[] args, string parameterValue)
