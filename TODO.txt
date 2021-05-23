@@ -15,8 +15,12 @@ TODO list:
 
 
 TESTS:
-- check different case-sensitivity cases
-    - config:short-case-insensitive
-        - short single wrongcase accepted
-        - 
++ check different case-sensitivity cases
+    + short-case-insensitive
+    + long-case-insensitive
+     
+
+FUTURE:
+- generalise intro symbols
+    - allow custom
     

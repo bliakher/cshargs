@@ -34,7 +34,7 @@ namespace CShargs
             registerAliases();
         }
 
-        public void CheckRules(HashSet<OptionMetadata> parsedOptions)
+        public void CheckRules(ICollection<OptionMetadata> parsedOptions)
         {
             foreach (var rule in rules_) {
                 rule.Check(parsedOptions);
@@ -70,8 +70,14 @@ namespace CShargs
 
         private void registerOptionByLongName(OptionMetadata option, string longName)
         {
+            Debug.Assert(longName != null);
+
             if (OptionsByLong.ContainsKey(longName)) {
                 throw new ConfigurationException($"Option name {longName} is duplicate.");
+            }
+
+            if (Config.OptionFlags.HasFlag(OptionFlags.LongCaseInsensitive)) {
+                longName = longName.ToUpper();
             }
 
             OptionsByLong.Add(longName, option);
@@ -83,6 +89,10 @@ namespace CShargs
 
             if (OptionsByShort.ContainsKey(shortName.ToString())) {
                 throw new ConfigurationException($"Option name {shortName} is duplicate.");
+            }
+
+            if (Config.OptionFlags.HasFlag(OptionFlags.ShortCaseInsensitive)) {
+                shortName = char.ToUpper(shortName);
             }
 
             OptionsByShort.Add(shortName.ToString(), option);

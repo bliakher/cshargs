@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using TokenReader = CShargs.ListReader<string>;
 
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("s14-api-testing")]
 namespace CShargs
 {
     public abstract class Parser : IParserConfig
@@ -85,13 +84,27 @@ namespace CShargs
                         }
 
                     } else if (rawArg.StartsWith(ShortOptionSymbol)) {
-                        if (rawArg.Length - ShortOptionSymbol.Length > 1) { // more options aggregated
-                            if (OptionFlags.HasFlag(OptionFlags.ForbidAggregated)) {
-                                throw new OptionAggregationException("It is forbidden to aggregate options.");
+                        if (rawArg.Length - ShortOptionSymbol.Length > 1) {
+                            // more options aggregated OR value follows
+
+                            // first attempt to interpret string as flag aggregation
+                            bool aggregated = false;
+                            if (!OptionFlags.HasFlag(OptionFlags.ForbidAggregated)) {
+
+                                // when first char is flag option, we can be sure that it is an aggregation
+                                // therefore it can throw so we get more detailed error messages
+                                if (isFirstCharShortFlagOption(rawArg)) {
+                                    aggregated = true;
+                                    parseAggregated(rawArg);
+                                }
                             }
-                            parseAggregated(rawArg, metadata_.OptionsByShort);
-                        }
-                        else if (!tryParseShort(rawArg)) { // only one short option
+
+                            // if that fails, interpret as key-value option
+                            if (!aggregated && !tryParseShort(rawArg)) {
+                                throw new UnknownOptionException(rawArg);
+                            }
+
+                        } else if (!tryParseShort(rawArg)) { // only one short option
                             throw new UnknownOptionException(rawArg);
                         }
                     }
@@ -108,76 +121,122 @@ namespace CShargs
 
         }
 
+        private bool isFirstCharShortFlagOption(string rawArg)
+        {
+            char first = rawArg[ShortOptionSymbol.Length];
+            return metadata_.OptionsByShort.TryGetValue(first.ToString(), out OptionMetadata option) && option is FlagOption;
+        }
+
         private bool tryParseLong(string rawArg)
         {
-            return tryParse(rawArg,
-                LongOptionSymbol, metadata_.OptionsByLong,
-                OptionFlags.HasFlag(OptionFlags.ForbidLongEquals),
-                OptionFlags.HasFlag(OptionFlags.ForbidLongSpace),
-                true
-                );
+            bool forbidEquals = OptionFlags.HasFlag(OptionFlags.ForbidLongEquals);
+            bool forbidSpace = OptionFlags.HasFlag(OptionFlags.ForbidLongSpace);
+            bool caseInsensitive = OptionFlags.HasFlag(OptionFlags.LongCaseInsensitive);
+
+            int start = LongOptionSymbol.Length;
+            int eqIdx = rawArg.IndexOf(EqualsSymbol);
+            string name, value = null;
+            if (rawArg.Contains(EqualsSymbol) && !forbidEquals) {
+                name = rawArg.Substring(start, eqIdx - start);
+                value = rawArg.Substring(eqIdx + EqualsSymbol.Length);
+            } else {
+                name = rawArg.Substring(start);
+                value = null;
+            }
+
+            if (value == null && forbidSpace) {
+                throw new MissingOptionValueException(rawArg);
+            }
+
+            if (caseInsensitive) {
+                name = name.ToUpper();
+            }
+
+            return tryParse(name, value, metadata_.OptionsByLong);
         }
 
         private bool tryParseShort(string rawArg)
         {
-            return tryParse(rawArg,
-                ShortOptionSymbol, metadata_.OptionsByShort,
-                OptionFlags.HasFlag(OptionFlags.ForbidShortEquals),
-                OptionFlags.HasFlag(OptionFlags.ForbidShortSpace),
-                OptionFlags.HasFlag(OptionFlags.ForbidShortNoSpace)
-                );
+            // here assume that rawArg is not an aggregation
+
+            bool forbidEquals = OptionFlags.HasFlag(OptionFlags.ForbidShortEquals);
+            bool forbidNospace = OptionFlags.HasFlag(OptionFlags.ForbidShortNoSpace);
+            bool caseInsensitive = OptionFlags.HasFlag(OptionFlags.ShortCaseInsensitive);
+            bool forbidSpace = OptionFlags.HasFlag(OptionFlags.ForbidShortSpace);
+
+            int start = ShortOptionSymbol.Length;
+            int eqIdx = rawArg.IndexOf(EqualsSymbol);
+            string name = null, value = null;
+            if (rawArg.Length - ShortOptionSymbol.Length == 1) {
+                name = rawArg.Substring(start);
+                value = null;
+
+            } else if (rawArg.Contains(EqualsSymbol) && !forbidEquals) {
+                name = rawArg.Substring(start, eqIdx - start);
+                value = rawArg.Substring(eqIdx + EqualsSymbol.Length);
+
+            } else if (!forbidNospace) {
+                name = rawArg.Substring(start, 1);
+                value = rawArg.Substring(start + 1);
+            }
+
+            if (value == null && forbidSpace) {
+                throw new MissingOptionValueException(rawArg);
+            }
+
+            if (name != null) {
+                if (caseInsensitive) {
+                    name = name.ToUpper();
+                }
+
+                return tryParse(name, value, metadata_.OptionsByShort);
+            }
+
+            return false;
         }
 
-        private void parseAggregated(string rawArg, IDictionary<string, OptionMetadata> lookup)
-        {
-            // remove option symbol from the start
-            var nameAgr = rawArg.Substring(ShortOptionSymbol.Length, rawArg.Length - ShortOptionSymbol.Length);
 
-            foreach (char name in nameAgr) {
+        private bool tryParse(string argName, string value, IDictionary<string, OptionMetadata> lookup)
+        {
+            if (lookup.TryGetValue(argName, out var option)) {
+                ParseOption(option, value);
+                return true;
+            }
+            return false;
+        }
+
+        private void parseAggregated(string rawArg)
+        {
+            var lookup = metadata_.OptionsByShort;
+
+            // remove option symbol from the start
+            var names = rawArg.Substring(ShortOptionSymbol.Length, rawArg.Length - ShortOptionSymbol.Length);
+
+            foreach (char name in names) {
                 if (lookup.TryGetValue(name.ToString(), out var option)) {
-                    
-                    var targetOptionType = (option is AliasOption aliasOp 
-                        ? aliasOp.Targets.First() 
+
+                    var targetOptionType = (option is AliasOption aliasOp
+                        ? aliasOp.Targets.First()
                         : option).GetType();
-                    
+
                     if (targetOptionType != typeof(FlagOption)) {
                         throw new OptionAggregationException("Options with parameters cannot be aggregated");
                     }
 
-                    ParseOption(option);
-                }
-                else {
+                    ParseOption(option, null);
+                } else {
                     throw new UnknownOptionException(name.ToString());
                 }
             }
         }
 
-        private bool tryParse(string rawArg, string introSymbol, IDictionary<string, OptionMetadata> lookup, bool forbidEquals, bool forbidSpace, bool forbidNoSpace)
-        {
-            int eqIdx = 0;
-            string name;
-            if (forbidEquals || (eqIdx = rawArg.IndexOf(EqualsSymbol)) == -1) {
-                name = rawArg.Substring(introSymbol.Length);
-            } else {
-                name = rawArg.Substring(introSymbol.Length, rawArg.Length - introSymbol.Length - eqIdx);
-            }
-
-            if (lookup.TryGetValue(name, out var option)) {
-
-                ParseOption(option);
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        internal void ParseOption(OptionMetadata option)
+        internal void ParseOption(OptionMetadata option, string value)
         {
             if (option.GetType() != typeof(FlagOption) && parsedOptions_.Contains(option)) {
                 throw new DuplicateOptionException(tokens_.Peek(-1));
             }
 
-            option.Parse(this, tokens_);
+            option.Parse(this, value, tokens_);
             parsedOptions_.Add(option);
         }
 

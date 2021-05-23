@@ -12,63 +12,115 @@ namespace Tests
 {
     public class ValueOption
     {
-        internal void HasOptionalValueOptionParameterParsed<T>(string[] args, FileOptionalArguments arguments, T expectedParameterValue, T optionProperty)
-        {
-            // Act
-            arguments.Parse(args);
-
-            // Assert
-            Assert.Equal(expectedParameterValue, optionProperty);
-        }
-
         [Theory]
         [InlineData(new string[] { "--output=File.out" }, "File.out")]
         [InlineData(new string[] { "-o File.out" }, "File.out")]
         [InlineData(new string[] { "-oFile.out" }, "File.out")]
-        [InlineData(new string[] { "command" }, "")]
-        public void HasOptionalValueOptionStringParameterParsed(string[] args, string parameterValue)
+        [InlineData(new string[] { "command" }, null)]
+        public void ValueOptionStringParsed(string[] args, string parameterValue)
         {
             // Arrange
             var arguments = new FileOptionalArguments();
-
-            // Act and assert
-            HasOptionalValueOptionParameterParsed<string>(args, arguments, parameterValue, arguments.OutputFile);
+            // Act
+            arguments.Parse(args);
+            // Assert
+            Assert.Equal(parameterValue, arguments.OutputFile);
         }
 
         [Theory]
-        [InlineData(new string[] { "--number-of-muskrats=4" }, 4)]
-        [InlineData(new string[] { "--number-of-muskrats", "4" }, 4)]
-        [InlineData(new string[] { "-m", "4" }, 4)]
-        [InlineData(new string[] { "-m4" }, 4)]
-        [InlineData(new string[] { "-m=4" }, 4)]
-        [InlineData(new string[] { "command" }, 1)] // default parameter value used as option is not required
-        public void HasOptionalValueOptionIntParameterParsed(string[] args, int parameterValue)
+        [InlineData(new string[] { "--number-of-muskrats=4" }, true, 4)]
+        [InlineData(new string[] { "--Number-Of-Muskrats=4" }, false, 4)]
+        [InlineData(new string[] { "--number-of-muskrats", "4" }, true, 4)]
+        [InlineData(new string[] { "--Number-Of-Muskrats", "4" }, false, 4)]
+        [InlineData(new string[] { "-m", "4" }, true, 4)]
+        [InlineData(new string[] { "-M", "4" }, false, 4)]
+        [InlineData(new string[] { "-m4" }, true, 4)]
+        [InlineData(new string[] { "-M4" }, false, 4)]
+        [InlineData(new string[] { "-m=4" }, true, 4)]
+        [InlineData(new string[] { "-M=4" }, false, 4)]
+        [InlineData(new string[] { "command" }, true, 1)] // default parameter value used as option is not required
+        public void ValueOptionIntParsed(string[] args, bool expectSuccess, int parameterValue)
         {
             // Arrange
             var arguments = new FileOptionalArguments();
-
-            // Act and assert
-            HasOptionalValueOptionParameterParsed<int>(args, arguments, parameterValue, arguments.Muskrats);
+            // Assert
+            if (expectSuccess) {
+                arguments.Parse(args);
+                Assert.Equal(parameterValue, arguments.Muskrats);
+            } else {
+                Assert.Throws<UnknownOptionException>(() => arguments.Parse(args));
+            }
         }
 
         [Theory]
-        [InlineData(new string[] { "--full-name=Freddie;Mercury" }, new string[] { "Freddie", "Mercury" })]
+        [InlineData(new string[] { "--number-of-muskrats=4" }, true, 4)]
+        [InlineData(new string[] { "--Number-Of-Muskrats=4" }, false, 4)]
+        [InlineData(new string[] { "--number-of-muskrats", "4" }, true, 4)]
+        [InlineData(new string[] { "--Number-Of-Muskrats", "4" }, false, 4)]
+        [InlineData(new string[] { "-m", "4" }, true, 4)]
+        [InlineData(new string[] { "-M", "4" }, true, 4)]
+        [InlineData(new string[] { "-m4" }, true, 4)]
+        [InlineData(new string[] { "-M4" }, true, 4)]
+        [InlineData(new string[] { "-m=4" }, true, 4)]
+        [InlineData(new string[] { "-M=4" }, true, 4)]
+        [InlineData(new string[] { "command" }, true, 1)] // default parameter value used as option is not required
+        public void ValueOptionIntParsed_ShortCI(string[] args, bool expectSuccess, int parameterValue)
+        {
+            // Arrange
+            var arguments = new FileOptionalArguments_ShortCI();
+            // Assert
+            if (expectSuccess) {
+                arguments.Parse(args);
+                Assert.Equal(parameterValue, arguments.Muskrats);
+            } else {
+                Assert.Throws<UnknownOptionException>(() => arguments.Parse(args));
+            }
+        }
+
+        [Theory]
+        [InlineData(new string[] { "--number-of-muskrats=4" }, true, 4)]
+        [InlineData(new string[] { "--Number-Of-Muskrats=4" }, true, 4)]
+        [InlineData(new string[] { "--number-of-muskrats", "4" }, true, 4)]
+        [InlineData(new string[] { "--Number-Of-Muskrats", "4" }, true, 4)]
+        [InlineData(new string[] { "-m", "4" }, true, 4)]
+        [InlineData(new string[] { "-M", "4" }, false, 4)]
+        [InlineData(new string[] { "-m4" }, true, 4)]
+        [InlineData(new string[] { "-M4" }, false, 4)]
+        [InlineData(new string[] { "-m=4" }, true, 4)]
+        [InlineData(new string[] { "-M=4" }, false, 4)]
+        [InlineData(new string[] { "command" }, true, 1)] // default parameter value used as option is not required
+        public void ValueOptionIntParsed_LongCI(string[] args, bool expectSuccess, int parameterValue)
+        {
+            // Arrange
+            var arguments = new FileOptionalArguments_LongCI();
+            // Assert
+            if (expectSuccess) {
+                arguments.Parse(args);
+                Assert.Equal(parameterValue, arguments.Muskrats);
+            } else {
+                Assert.Throws<UnknownOptionException>(() => arguments.Parse(args));
+            }
+        }
+
+        [Theory]
+        [InlineData(new string[] { "--full-name=Freddie;Mercury" }, new string[] { "Freddie", "Mercury" })] // <3
         [InlineData(new string[] { "--full-name", "Roger;Taylor" }, new string[] { "Roger", "Taylor" })]
         [InlineData(new string[] { "-nBrian;May" }, new string[] { "Brian", "May" })]
         [InlineData(new string[] { "-n", "John;Deacon" }, new string[] { "John", "Deacon" })]
-        public void HasOptionalValueOptionUserDefinedParameterParsed(string[] args, string[] parameterValueParts)
+        public void ValueOptionUserTypeParsed(string[] args, string[] expectedParts)
         {
             // Arrange
             var arguments = new FileOptionalArguments();
-            var parameterValue = new FullName(parameterValueParts[0], parameterValueParts[1]);
-
-            // Act and assert
-            HasOptionalValueOptionParameterParsed<FullName>(args, arguments, parameterValue, arguments.Name);
+            var expecteValue = new FullName(expectedParts[0], expectedParts[1]);
+            // Act
+            arguments.Parse(args);
+            // Assert
+            Assert.Equal(expecteValue, arguments.Name);
         }
 
         [Fact]
-        public void DoesMissingMandatoryValueOptionThrowException()
-        {   
+        public void MissingMandatoryValueOptionThrows()
+        {
             // Arrange
             var arguments = new FileMandatoryArguments();
 

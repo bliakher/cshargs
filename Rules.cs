@@ -7,7 +7,7 @@ namespace CShargs
 
     interface IRule
     {
-        public void Check(HashSet<OptionMetadata> parsedOptions);
+        public void Check(ICollection<OptionMetadata> parsedOptions);
     }
 
     class RequiredRule : IRule
@@ -19,7 +19,7 @@ namespace CShargs
             this.target = target;
         }
 
-        public void Check(HashSet<OptionMetadata> parsedOptions)
+        public void Check(ICollection<OptionMetadata> parsedOptions)
         {
             if (!parsedOptions.Contains(target)) {
                 throw new MissingOptionException(target.LongName);
@@ -37,7 +37,7 @@ namespace CShargs
             this.target = target;
         }
 
-        public void Check(HashSet<OptionMetadata> parsedOptions)
+        public void Check(ICollection<OptionMetadata> parsedOptions)
         {
             var dependency = target.UseWith;
 
@@ -63,7 +63,7 @@ namespace CShargs
                 groupOptions_.Add(optionProperties[name]);
             }
         }
-        public void Check(HashSet<OptionMetadata> parsedOptions)
+        public void Check(ICollection<OptionMetadata> parsedOptions)
         {
             int count = 0;
             foreach (var option in parsedOptions) {

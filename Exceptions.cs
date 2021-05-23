@@ -70,7 +70,13 @@ namespace CShargs
     public class MissingOptionException : OptionException
     {
         internal MissingOptionException(string optionName, Exception innerException = null)
-            : base(optionName, $"Required option '{optionName}' is missing.", innerException) { }
+            : base(optionName, $"Missing required option '{optionName}'.", innerException) { }
+    }
+
+    public class MissingOptionValueException : OptionException
+    {
+        internal MissingOptionValueException(string optionName, Exception innerException = null)
+            : base(optionName, $"Missing value for option '{optionName}'.", innerException) { }
     }
 
     public class MissingGroupOptionException : ParsingException

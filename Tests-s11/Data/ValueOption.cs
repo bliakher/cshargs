@@ -15,6 +15,33 @@ namespace Tests.Data
         [ValueOption("full-name", shortName: 'n', help: "Enter fullname in firstName;lastName format.")]
         public FullName Name { get; set; }
     }
+
+    [ParserConfig(optionFlags: OptionFlags.ShortCaseInsensitive)]
+    class FileOptionalArguments_ShortCI : Parser
+    {
+        [ValueOption("output", shortName: 'o', required: false, help: "Do not send the results to stderr, but overwrite the specified file.")]
+        public string OutputFile { get; set; }
+
+        [ValueOption("number-of-muskrats", shortName: 'm', required: false)]
+        public int Muskrats { get; set; } = 1;
+
+        [ValueOption("full-name", shortName: 'n', help: "Enter fullname in firstName;lastName format.")]
+        public FullName Name { get; set; }
+    }
+
+    [ParserConfig(optionFlags: OptionFlags.LongCaseInsensitive)]
+    class FileOptionalArguments_LongCI : Parser
+    {
+        [ValueOption("output", shortName: 'o', required: false, help: "Do not send the results to stderr, but overwrite the specified file.")]
+        public string OutputFile { get; set; }
+
+        [ValueOption("number-of-muskrats", shortName: 'm', required: false)]
+        public int Muskrats { get; set; } = 1;
+
+        [ValueOption("full-name", shortName: 'n', help: "Enter fullname in firstName;lastName format.")]
+        public FullName Name { get; set; }
+    }
+
     class FileMandatoryArguments : Parser
     {
         [ValueOption("output", shortName: 'o', required: true, help: "Do not send the results to stderr, but overwrite the specified file.")]
