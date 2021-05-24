@@ -200,5 +200,10 @@ namespace CShargs
                 }
             }
         }
+
+        public IEnumerable<GroupRule> GetGroups()
+        {
+            return rules_.Where(r => r is GroupRule).Select(r => r as GroupRule);
+        }
     }
 }

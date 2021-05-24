@@ -60,6 +60,7 @@ namespace CShargs
         private OptionGroupAttribute attribute_;
         public bool Required => attribute_.Required;
         public OptionMetadata UseWith { get; }
+        public IEnumerable<object> Options => groupOptions_;
 
         public GroupRule(OptionGroupAttribute groupAttribute, IDictionary<string, OptionMetadata> optionProperties)
         {
@@ -117,22 +118,7 @@ namespace CShargs
 
         public override string ToString()
         {
-            StringBuilder sb = new();
-            if (Required) {
-                sb.Append("( ");
-            } else {
-                sb.Append("[ ");
-            }
-
-            sb.Append(string.Join(" | ", getOptionNames()));
-
-            if (Required) {
-                sb.Append(" )");
-            } else {
-                sb.Append(" ]");
-            }
-
-            return sb.ToString();
+            return string.Join(" | ", getOptionNames());
         }
     }
 }

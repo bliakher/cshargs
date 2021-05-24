@@ -303,6 +303,17 @@ namespace CShargs
             GenerateHelp(sw);
             return sw.ToString();
         }
-        public void GenerateHelp(TextWriter output) { }
+        public void GenerateHelp(TextWriter output) {
+            output.Write($"{metadata_.Config.CommandName}");
+            var groups = metadata_.GetGroups();
+            var groupOptions = groups.SelectMany(group => group.Options).ToHashSet();
+
+            // first print simple options
+            foreach (var option in metadata_.OptionsByProperty.Values) {
+                if (!groupOptions.Contains(option)) {
+                    output.Write($" {option}");
+                }
+            }
+        }
     }
 }

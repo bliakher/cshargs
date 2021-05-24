@@ -75,6 +75,7 @@ namespace CShargs
 
     public interface IParserConfig
     {
+        string CommandName { get; }
         OptionFlags OptionFlags { get; }
         string ShortOptionSymbol { get; }
         string LongOptionSymbol { get; }
@@ -87,6 +88,7 @@ namespace CShargs
     {
 
         public ParserConfigAttribute(
+            string commandName = "command",
             OptionFlags optionFlags = OptionFlags.Default,
             string shortOptionSymbol = "-",
             string longOptionSymbol = "--",
@@ -94,15 +96,19 @@ namespace CShargs
             string equalsSymbol = "="
             )
         {
-            if (shortOptionSymbol == longOptionSymbol && !optionFlags.HasFlag(CShargs.OptionFlags.ForbidAggregated)) {
-                throw new ConfigurationException(
-                    "Cannot use same short and long symbol while allowing aggregated short options.");
-            }
-            if (shortOptionSymbol.Length > longOptionSymbol.Length) {
-                throw new ConfigurationException(
-                    $"{nameof(shortOptionSymbol)} cannot be longer than {nameof(longOptionSymbol)}.");
+            ConfigurationException.ThrowIf(shortOptionSymbol == longOptionSymbol && !optionFlags.HasFlag(CShargs.OptionFlags.ForbidAggregated),
+                "Cannot use same short and long symbol while allowing aggregated short options.");
+            ConfigurationException.ThrowIf(shortOptionSymbol.Length > longOptionSymbol.Length,
+                $"{nameof(shortOptionSymbol)} cannot be longer than {nameof(longOptionSymbol)}.");
+            ConfigurationException.ThrowIf(shortOptionSymbol == null, nameof(shortOptionSymbol) + " cannot be null.");
+            ConfigurationException.ThrowIf(longOptionSymbol == null, nameof(longOptionSymbol) + " cannot be null.");
+            ConfigurationException.ThrowIf(commandName == null, nameof(commandName) + " cannot be null.");
+
+            if (equalsSymbol == null) {
+                optionFlags |= OptionFlags.ForbidLongEquals | OptionFlags.ForbidShortEquals;
             }
 
+            CommandName = commandName;
             OptionFlags = optionFlags;
             ShortOptionSymbol = shortOptionSymbol;
             LongOptionSymbol = longOptionSymbol;
@@ -110,10 +116,11 @@ namespace CShargs
             EqualsSymbol = equalsSymbol;
         }
 
-        public OptionFlags OptionFlags { get; private init; }
-        public string ShortOptionSymbol { get; private init; }
-        public string LongOptionSymbol { get; private init; }
-        public string DelimiterSymbol { get; private init; }
-        public string EqualsSymbol { get; private init; }
+        public string CommandName { get; }
+        public OptionFlags OptionFlags { get; }
+        public string ShortOptionSymbol { get; }
+        public string LongOptionSymbol { get; }
+        public string DelimiterSymbol { get; }
+        public string EqualsSymbol { get; }
     }
 }

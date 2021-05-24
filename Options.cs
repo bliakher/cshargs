@@ -58,7 +58,8 @@ namespace CShargs
             bool required = false,
             char shortName = '\0',
             string useWith = null,
-            string help = null)
+            string help = null,
+            string metaVar = null)
         {
             ThrowIf.ArgumentNull(nameof(name), name);
             LongName = name;
@@ -66,6 +67,7 @@ namespace CShargs
             ShortName = shortName;
             UseWith = useWith;
             HelpText = help;
+            MetaVar = metaVar;
         }
 
         public string LongName { get; private init; }
@@ -74,6 +76,7 @@ namespace CShargs
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
         public bool CanConcat => false;
+        public string MetaVar { get; }
 
         OptionMetadata IOptionAttribute.CreateMetadata(ParserMetadata parserMeta, MemberInfo member)
         {

@@ -53,6 +53,11 @@ namespace CShargs
             }
             return rules;
         }
+
+        public override string ToString()
+        {
+            return GetRawName();
+        }
     }
 
     internal sealed class FlagOption : OptionMetadata
@@ -75,6 +80,9 @@ namespace CShargs
     {
         public PropertyInfo Property => (PropertyInfo)member_;
         private Delegate staticParse_ = null;
+        private new ValueOptionAttribute attribute_ => (ValueOptionAttribute)base.attribute_;
+
+        public string MetaVar => attribute_.MetaVar ?? Property.Name.ToUpper();
 
         public ValueOption(ParserMetadata parserMeta, PropertyInfo prop, ValueOptionAttribute attribute)
             : base(parserMeta, prop, attribute) { }
@@ -101,6 +109,32 @@ namespace CShargs
 
         protected override void SetValue(object userObject, object value)
             => Property.SetValue(userObject, value);
+
+        public override string GetRawName(bool preferShort = true)
+        {
+            if (preferShort && attribute_.ShortName != '\0') {
+                string name = base.GetRawName(true);
+
+                if (!parserMeta_.Config.OptionFlags.HasFlag(OptionFlags.ForbidShortEquals)) {
+                    name += parserMeta_.Config.EqualsSymbol + MetaVar;
+                } else if (!parserMeta_.Config.OptionFlags.HasFlag(OptionFlags.ForbidShortSpace)) {
+                    name += ' ' + MetaVar;
+                } else if (!parserMeta_.Config.OptionFlags.HasFlag(OptionFlags.ForbidShortNoSpace)) {
+                    name += MetaVar;
+                }
+                return name;
+            } else {
+                string name = base.GetRawName(false);
+
+                if (!parserMeta_.Config.OptionFlags.HasFlag(OptionFlags.ForbidLongEquals)) {
+                    name += parserMeta_.Config.EqualsSymbol + MetaVar;
+                } else if (!parserMeta_.Config.OptionFlags.HasFlag(OptionFlags.ForbidLongSpace)) {
+                    name += ' ' + MetaVar;
+                }
+
+                return name;
+            }
+        }
 
         private object InvokeStaticParseMethod(string value)
         {

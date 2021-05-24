@@ -13,6 +13,13 @@ namespace CShargs
     {
         internal ConfigurationException(string message, Exception innerException = null)
             : base(message, innerException) { }
+
+        internal static void ThrowIf(bool condition, string message, Exception innerException = null)
+        {
+            if (condition) {
+                throw new ConfigurationException(message, innerException);
+            }
+        }
     }
 
     /// <summary>

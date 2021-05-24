@@ -8,16 +8,18 @@ TODO list:
     + loading
     + parsing
 - custom options
-    - loading
+    + loading
     + parsing
 + split attributes to POCO and parser
 + groups
-    - required in group throws
-    - group use with
-- aggregation 
-    - case insensitive
+    + required in group throws
+    + group use with
++ aggregation 
+    + case insensitive
 
 HELP PRINT:
+--v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v----------------- WIP
++ specify name of command
 - add meta-vars, default to prop name
     - override ValueOption get raw name
 

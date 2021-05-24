@@ -31,7 +31,7 @@ namespace CShargs.Examples
     [AliasOption("u", nameof(Portable), nameof(Verbose))]
     // limits syntax of value options - only space for short options and equal sign for long eg. -f FORMAT, --format=FORMAT
     // all other settings are left at default
-    [ParserConfig(OptionFlags.ForbidShortEquals | OptionFlags.ForbidLongSpace)]
+    [ParserConfig("time", OptionFlags.ForbidShortEquals | OptionFlags.ForbidLongSpace)]
     class TimeArguments : Parser 
     {
         // options without parameters - flags
