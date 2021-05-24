@@ -98,7 +98,8 @@ class GitPushArguments : Parser {
 
 ## Custom option - TODO - value smt different
 
-If you need an option that needs some context during its own parsing, or you need to interpret the raw arguments in sligtly different way, you can use the `CustomOption` attribute on a method. The signature of the method should be `void MyMethod(string value)`.
+If you need an option that needs some context during its own parsing, or you need to interpret the raw arguments in sligtly different way, you can use the `CustomOption` attribute on a method. 
+The signature of the method should be `void MyMethod(string value)`.
 
 If the custom parameter has a value attached to it (like this: `--param=value`), it is given via the `string value` parameter of the method. Otherwise the parameter is `null`.
 
