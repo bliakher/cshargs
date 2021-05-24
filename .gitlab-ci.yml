@@ -19,9 +19,7 @@ test-s14:
 
 test-s11:
   stage: test
-  before_script:
-    - 'dotnet add package Xunit'
   script:
-    - 'dotnet test Tests-s11/Tests.csproj'
+    - 'dotnet test Tests-s11/Tests-s11.csproj'
 
 
