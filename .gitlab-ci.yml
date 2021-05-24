@@ -11,14 +11,16 @@ build:
     - dotnet build
 
 test-s14:
-    stage: test
-    before_script:
-        - 'dotnet add package Xunit'
-    script:
-        - 'dotnet test Tests-s14/s14-api-testing.csproj'
+  stage: test
+  before_script:
+    - 'dotnet add package Xunit'
+  script:
+    - 'dotnet test Tests-s14/s14-api-testing.csproj'
 
 test-s11:
   stage: test
+  before_script:
+    - 'dotnet add package Xunit'
   script:
     - 'dotnet test Tests-s11/Tests.csproj'
 
