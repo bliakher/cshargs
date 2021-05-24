@@ -52,7 +52,7 @@ namespace CShargs
     /// <summary>
     /// Thrown whem an unknow option is encountered.
     /// </summary>
-    public class UnknownOptionException : OptionException
+    public sealed class UnknownOptionException : OptionException
     {
         internal UnknownOptionException(string optionName, Exception innerException = null)
             : base(optionName, $"Unknown option '{optionName}'", innerException) { }
@@ -61,7 +61,7 @@ namespace CShargs
     /// <summary>
     /// Thrown when one option is encountered twice.
     /// </summary>
-    public class DuplicateOptionException : OptionException
+    public sealed class DuplicateOptionException : OptionException
     {
         internal DuplicateOptionException(string optionName, Exception innerException = null)
             : base(optionName, $"Duplicate option '{optionName}'", innerException) { }
@@ -71,7 +71,7 @@ namespace CShargs
     /// Thrown when option has the wrong format. Please dont throw this exception in custom parsers. To tell the parser
     /// that your custom parsing has failed, throw <see cref="FormatException"/>, or see the docs for alternative ways.
     /// </summary>
-    public class ValueOptionFormatException : OptionException
+    public sealed class ValueOptionFormatException : OptionException
     {
         internal ValueOptionFormatException(string optionName, Exception innerException)
             : base(optionName, $"Bad format in option '{optionName}': {innerException.Message}", innerException) { }
@@ -80,7 +80,7 @@ namespace CShargs
     /// <summary>
     /// Thrown when a required option is missing.
     /// </summary>
-    public class MissingOptionException : OptionException
+    public sealed class MissingOptionException : OptionException
     {
         internal MissingOptionException(string optionName, Exception innerException = null)
             : base(optionName, $"Missing required option '{optionName}'.", innerException) { }
@@ -89,7 +89,7 @@ namespace CShargs
     /// <summary>
     /// Thrown when parameter of value option is missing.
     /// </summary>
-    public class MissingOptionValueException : OptionException
+    public sealed class MissingOptionValueException : OptionException
     {
         internal MissingOptionValueException(string optionName, Exception innerException = null)
             : base(optionName, $"Missing value for option '{optionName}'.", innerException) { }
@@ -99,7 +99,7 @@ namespace CShargs
     /// <summary>
     /// Thrown when no option from a required option group is used.
     /// </summary>
-    public class MissingGroupException : ParsingException
+    public sealed class MissingGroupException : ParsingException
     {
         internal MissingGroupException(IEnumerable<string> groupOptions, Exception innerException = null)
             : base($"Missing option from required group ( {String.Join(" | ", groupOptions)} )", innerException) { }
@@ -108,7 +108,7 @@ namespace CShargs
     /// <summary>
     /// Thrown when multiple options from an exclusive group are used.
     /// </summary>
-    public class MultipleOptionsFromGroupException : ParsingException
+    public sealed class MultipleOptionsFromGroupException : ParsingException
     {
         internal MultipleOptionsFromGroupException(IEnumerable<string> groupOptions, Exception innerException = null)
             : base($"You can't use multiple options from exclusive group ( {String.Join(" | ", groupOptions)} )", innerException) { }
@@ -117,7 +117,7 @@ namespace CShargs
     /// <summary>
     /// Aggregation of options can be used only on short FlagOptions.
     /// </summary>
-    public class OptionAggregationException : ParsingException
+    public sealed class OptionAggregationException : ParsingException
     {
         internal OptionAggregationException(string message)
             : base(message){}
@@ -126,7 +126,7 @@ namespace CShargs
     /// <summary>
     /// Thrown when a useWith dependency of option is missing
     /// </summary>
-    public class MissingDependencyException : OptionException
+    public sealed class MissingDependencyException : OptionException
     {
         internal MissingDependencyException(string optionName, string dependencyName, Exception innerException = null)
             : base(optionName, $"Option {optionName} is used without dependency {dependencyName}", innerException) { }
@@ -135,7 +135,7 @@ namespace CShargs
     /// <summary>
     /// Thrown when count of plain arguments doesn't match the required count
     /// </summary>
-    public class PlainArgsCountException : ParsingException
+    public sealed class PlainArgsCountException : ParsingException
     {
         internal PlainArgsCountException(string message, Exception inner = null)
             : base(message, inner) { }
