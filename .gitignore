@@ -33,6 +33,10 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# Generated docs
+html/
+latex/
+
 # Visual Studio (Code) files
 .vs/
 .vscode/
