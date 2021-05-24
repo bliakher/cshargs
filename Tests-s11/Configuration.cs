@@ -43,20 +43,18 @@ namespace Tests
         }
 
         [Theory]
-        [InlineData(new string[] { "--verbose", "command1", "command2", "command3" }, 2, true)]
-        [InlineData(new string[] { "command1", "--verbose", "--", "command2" }, 2, true)]
-        [InlineData(new string[] { "--", "command1", "command2", "--verbose"}, 2, false)] // skipped because of the delimiter
+        [InlineData(new string[] { "--verbose", "command1", "command2", "command3" }, 2, false)]
+        [InlineData(new string[] { "command1", "--verbose", "--", "command2" }, 2, false)]
+        [InlineData(new string[] { "--", "command1", "command2", "--verbose"}, 2, true)] // the delimiter gets skipped
         [InlineData(new string[] { "command1", "--verbose", "command2" }, 1, true)]
-        public void HasOptionBeenSkipped(string[] args, int argsToSkip, bool optionSkipped) // look into
+        public void HasOptionBeenSkipped(string[] args, int argsToSkip, bool optionPresent) // look into
         {
             // Arrange
             var arguments = new SkippedArguments(argsToSkip);
-
             // Act
             arguments.Parse(args);
-
             // Assert
-            Assert.Equal(optionSkipped, arguments.Verbose);
+            Assert.Equal(optionPresent, arguments.Verbose);
         }
 
 

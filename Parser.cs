@@ -80,6 +80,7 @@ namespace CShargs
                 if (skip > 0) {
                     skip--;
                     tokens_.Read();
+                    continue;
                 }
 
                 int position = tokens_.Position;
