@@ -44,7 +44,7 @@ namespace CShargs
     /// Target is property inside the parser class
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class FlagOptionAttribute : Attribute, IOptionAttribute
+    public sealed class FlagOptionAttribute : Attribute, IOptionAttribute
     {
         public FlagOptionAttribute(
             string name,
@@ -80,7 +80,7 @@ namespace CShargs
     /// Target is property inside the parser class
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class ValueOptionAttribute : Attribute, IOptionAttribute
+    public sealed class ValueOptionAttribute : Attribute, IOptionAttribute
     {
         public ValueOptionAttribute(
             string name,
@@ -118,7 +118,7 @@ namespace CShargs
     /// Target is property inside the parser class of type Parser
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class VerbOptionAttribute : Attribute, IOptionAttribute
+    public sealed class VerbOptionAttribute : Attribute, IOptionAttribute
     {
         public VerbOptionAttribute(
             string name,
@@ -151,7 +151,7 @@ namespace CShargs
     /// Target is method in parser class with signature void MyMethod(string value)
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class CustomOptionAttribute : Attribute, IOptionAttribute
+    public sealed class CustomOptionAttribute : Attribute, IOptionAttribute
     {
         public CustomOptionAttribute(
             string name,
@@ -186,7 +186,7 @@ namespace CShargs
     /// Target is the parser class
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class AliasOptionAttribute : Attribute, IOptionAttribute
+    public sealed class AliasOptionAttribute : Attribute, IOptionAttribute
     {
         public AliasOptionAttribute(
             string alias,
@@ -237,7 +237,7 @@ namespace CShargs
     /// Target is the parser class
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class OptionGroupAttribute : Attribute
+    public sealed class OptionGroupAttribute : Attribute
     {
         /// <summary>
         /// Names of properties in parser that are part of this group
