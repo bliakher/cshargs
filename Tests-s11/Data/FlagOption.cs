@@ -7,19 +7,19 @@ namespace Tests.Data
         [FlagOption("verbose", shortName: 'v', help: "Give very verbose output about all the program knows about.")]
         public bool Verbose { get; set; }
     }
-    [ParserConfig(OptionFlags.ForbidShortSpace | OptionFlags.ForbidLongSpace)]
+    [ParserConfig(optionFlags: OptionFlags.ForbidShortSpace | OptionFlags.ForbidLongSpace)]
     class FlagArgumentsForbidSpace : Parser
     {
         [FlagOption("verbose", shortName: 'v', help: "Give very verbose output about all the program knows about.")]
         public bool Verbose { get; set; }
     }
-    [ParserConfig(OptionFlags.ForbidShortNoSpace)]
+    [ParserConfig(optionFlags: OptionFlags.ForbidShortNoSpace)]
     class FlagArgumentsForbidNoSpace : Parser
     {
         [FlagOption("verbose", shortName: 'v', help: "Give very verbose output about all the program knows about.")]
         public bool Verbose { get; set; }
     }
-    [ParserConfig(OptionFlags.ForbidShortEquals | OptionFlags.ForbidLongEquals)]
+    [ParserConfig(optionFlags: OptionFlags.ForbidShortEquals | OptionFlags.ForbidLongEquals)]
     class FlagArgumentsForbidEquals : Parser
     {
         [FlagOption("verbose", shortName: 'v', help: "Give very verbose output about all the program knows about.")]

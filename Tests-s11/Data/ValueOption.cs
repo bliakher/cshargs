@@ -15,25 +15,25 @@ namespace Tests.Data
         [ValueOption("full-name", shortName: 'n', help: "Enter fullname in firstName;lastName format.")]
         public FullName Name { get; set; }
     }
-    [ParserConfig(OptionFlags.ForbidLongSpace | OptionFlags.ForbidShortSpace)]
+    [ParserConfig(optionFlags: OptionFlags.ForbidLongSpace | OptionFlags.ForbidShortSpace)]
     class FileOptionalArgumentsForbidSpace : Parser
     {
         [ValueOption("output", shortName: 'o', required: false, help: "Do not send the results to stderr, but overwrite the specified file.")]
         public string OutputFile { get; set; }
     }
-    [ParserConfig(OptionFlags.ForbidShortNoSpace)]
+    [ParserConfig(optionFlags: OptionFlags.ForbidShortNoSpace)]
     class FileOptionalArgumentsForbidNoSpace : Parser
     {
         [ValueOption("output", shortName: 'o', required: false, help: "Do not send the results to stderr, but overwrite the specified file.")]
         public string OutputFile { get; set; }
     }
-    [ParserConfig(OptionFlags.ForbidLongEquals | OptionFlags.ForbidShortEquals)]
+    [ParserConfig(optionFlags: OptionFlags.ForbidLongEquals | OptionFlags.ForbidShortEquals)]
     class FileOptionalArgumentsForbidEquals : Parser
     {
         [ValueOption("output", shortName: 'o', required: false, help: "Do not send the results to stderr, but overwrite the specified file.")]
         public string OutputFile { get; set; }
     }
-    [ParserConfig(OptionFlags.ForbidLongEquals | OptionFlags.ForbidShortEquals | OptionFlags.ForbidShortNoSpace)]
+    [ParserConfig(optionFlags: OptionFlags.ForbidLongEquals | OptionFlags.ForbidShortEquals | OptionFlags.ForbidShortNoSpace)]
     class FileOptionalArgumentsForbidEqualsNoSpace : Parser
     {
         [ValueOption("output", shortName: 'o', required: false, help: "Do not send the results to stderr, but overwrite the specified file.")]

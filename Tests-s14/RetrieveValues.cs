@@ -37,7 +37,7 @@ namespace s14_api_testing
             public MyEnum EnumVal { get; set; }
         }
 
-        [ParserConfig(OptionFlags.EnumCaseInsensitive)]
+        [ParserConfig(optionFlags: OptionFlags.EnumCaseInsensitive)]
         class EnumArgsCaseInsensitive : Parser
         {
             [ValueOption("enum", shortName: 'n')]

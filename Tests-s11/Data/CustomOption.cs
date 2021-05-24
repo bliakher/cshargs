@@ -6,7 +6,7 @@ namespace Tests.Data
 {
     // example: --pos <x> <y> <z>
     // note: here we assume that "=" in value options are disabled via OptionSettings.ForbidLongEquals
-    [ParserConfig(OptionFlags.ForbidLongEquals)]
+    [ParserConfig(optionFlags: OptionFlags.ForbidLongEquals)]
     class VectorArguments : Parser
     {
         public Vector3 Position { get; private set; }
