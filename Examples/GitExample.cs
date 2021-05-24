@@ -3,7 +3,7 @@ using System;
 namespace CShargs.Examples
 {
 
-    class GitArguments : Parser {
+    internal class GitArguments : Parser {
 
         [FlagOption("version", shortName: 'v', help: "Display version.")] 
         private bool showVersion { get; set; }
@@ -14,7 +14,7 @@ namespace CShargs.Examples
         // git push --force
     }
 
-    class GitPushArguments : Parser {
+    internal class GitPushArguments : Parser {
         [FlagOption("force", shortName:'f', help:"Force push.")]
         private bool Force { get; set; }
     }

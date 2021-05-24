@@ -21,7 +21,7 @@ namespace Tests.Data
         public string Output { get; set; }
     }
 
-    [OptionGroup(true, nameof(ToFile), nameof(ToStdOut), nameof(ToStdErr), useWith = nameof(Print))]
+    [OptionGroup(true, nameof(ToFile), nameof(ToStdOut), nameof(ToStdErr), UseWith = nameof(Print))]
     class RequiredGroupDependenciesArguments : Parser
     {
 

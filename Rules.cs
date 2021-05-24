@@ -5,12 +5,12 @@ using System.Text;
 
 namespace CShargs
 {
-    interface IRule
+    internal interface IRule
     {
         public void Check(ICollection<OptionMetadata> parsedOptions);
     }
 
-    class RequiredRule : IRule
+    internal class RequiredRule : IRule
     {
         private OptionMetadata target;
 
@@ -33,7 +33,7 @@ namespace CShargs
         }
     }
 
-    class DependencyRule : IRule
+    internal class DependencyRule : IRule
     {
         private OptionMetadata target;
 
@@ -65,11 +65,11 @@ namespace CShargs
         {
             attribute_ = groupAttribute;
 
-            if (groupAttribute.useWith != null) {
-                if (!optionProperties.ContainsKey(groupAttribute.useWith)) {
-                    throw new ConfigurationException($"Property name '{groupAttribute.useWith}' not known in group {this}.");
+            if (groupAttribute.UseWith != null) {
+                if (!optionProperties.ContainsKey(groupAttribute.UseWith)) {
+                    throw new ConfigurationException($"Property name '{groupAttribute.UseWith}' not known in group {this}.");
                 }
-                UseWith = optionProperties[groupAttribute.useWith];
+                UseWith = optionProperties[groupAttribute.UseWith];
             }
 
             foreach (var name in attribute_.OptionGroup) {

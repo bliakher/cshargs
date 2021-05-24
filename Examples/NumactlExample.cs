@@ -5,7 +5,7 @@ using System;
 
 namespace CShargs.Examples
 {
-    class Program
+    internal class NumactlProgram
     {
         public static void RunExample(string[] args)
         {
@@ -49,7 +49,7 @@ namespace CShargs.Examples
         }
     }
 
-    class Options : Parser
+    internal class Options : Parser
     {
         [ValueOption("interleave", shortName:'i', help: "Interleave memory allocation across given nodes.", required: false)]
         public NodeNumbers Interleave { get; set; }
@@ -77,7 +77,7 @@ namespace CShargs.Examples
         }
     }
 
-    class NodeNumbers
+    internal class NodeNumbers
     {
         public int[] nodes;
 
@@ -94,7 +94,7 @@ namespace CShargs.Examples
         }
     }
 
-    class NodeNumber
+    internal class NodeNumber
     {
         public int node;
         public bool isSet = false;

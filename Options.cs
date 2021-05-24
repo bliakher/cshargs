@@ -11,7 +11,7 @@ namespace CShargs
     /// <summary>
     /// Interface that generalizes all OptionAttribute types
     /// </summary>
-    interface IOptionAttribute
+    internal interface IOptionAttribute
     {
         /// <summary>
         /// Long name of option without option symbol ie. "number-of-cats" for option --number-of-cats
@@ -39,6 +39,7 @@ namespace CShargs
         internal OptionMetadata CreateMetadata(ParserMetadata parserMeta, MemberInfo member);
     }
 
+    /// \addtogroup Options
     /// <summary>
     /// Flag option attribute is used for options without parameters. The type of the target property must be bool.
     /// Target is property inside the parser class
@@ -233,14 +234,14 @@ namespace CShargs
     }
 
     /// <summary>
-    /// For defining exclusive groups of options
-    /// Target is the parser class
+    /// For defining exclusive groups of options.
+    /// The <see cref="Parser"/> class is the target.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public sealed class OptionGroupAttribute : Attribute
     {
         /// <summary>
-        /// Names of properties in parser that are part of this group
+        /// Names of properties in parser that are part of this group.
         /// </summary>
         public string[] OptionGroup { get; }
         /// <summary>
@@ -252,7 +253,7 @@ namespace CShargs
         /// Dependency of whole option group
         /// Options inside an option group cannot have dependencies -> ConfigurationException
         /// </summary>
-        public string useWith { get; init; }
+        public string UseWith { get; init; }
 
         public OptionGroupAttribute(
             bool required,

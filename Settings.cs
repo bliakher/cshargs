@@ -73,39 +73,39 @@ namespace CShargs
 
 
     /// <summary>
-    /// Interface that represents configuration of parser
+    /// Interface that represents configuration of parser.
     /// </summary>
-    public interface IParserConfig
+    internal interface IParserConfig
     {
         /// <summary>
-        /// Name of command
+        /// Name of command.
         /// </summary>
         string CommandName { get; }
         /// <summary>
-        /// Parser configurations from <see cref="OptionFlags"/>> enum
+        /// Parser configurations from <see cref="OptionFlags"/>> enum.
         /// </summary>
         OptionFlags OptionFlags { get; }
         /// <summary>
-        /// Symbol with which short options are denoted 
+        /// Symbol with which short options are denoted .
         /// </summary>
         string ShortOptionSymbol { get; }
         /// <summary>
-        /// Symbol with which long options are denoted
+        /// Symbol with which long options are denoted.
         /// </summary>
         string LongOptionSymbol { get; }
         /// <summary>
-        /// Symbol that separates plain arguments from options
+        /// Symbol that separates plain arguments from options.
         /// </summary>
         string DelimiterSymbol { get; }
         /// <summary>
-        /// Symbol used with value options: -n=5 --number-of-cats=5
+        /// Symbol used with value options: -n=5 --number-of-cats=5.
         /// </summary>
         string EqualsSymbol { get; }
     }
 
     /// <summary>
-    /// Attribute for changing default parser configuration
-    /// Target is the parser class
+    /// Attribute for changing default parser configuration.
+    /// Annotate your parser with this attribute to configure it.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public sealed class ParserConfigAttribute : Attribute, IParserConfig

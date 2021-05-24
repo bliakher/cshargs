@@ -26,7 +26,7 @@ namespace Tests.Data
     }
 
 
-    [OptionGroup(false, nameof(ToFile), nameof(ToStdErr), useWith = nameof(Print))]
+    [OptionGroup(false, nameof(ToFile), nameof(ToStdErr), UseWith = nameof(Print))]
     class GroupDependenciesArguments : Parser
     {
 

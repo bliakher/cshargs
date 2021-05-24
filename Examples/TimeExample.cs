@@ -32,7 +32,7 @@ namespace CShargs.Examples
     // limits syntax of value options - only space for short options and equal sign for long eg. -f FORMAT, --format=FORMAT
     // all other settings are left at default
     [ParserConfig("time", OptionFlags.ForbidShortEquals | OptionFlags.ForbidLongSpace)]
-    class TimeArguments : Parser 
+    internal class TimeArguments : Parser 
     {
         // options without parameters - flags
         // their type must be bool - meaning: present x not present in args

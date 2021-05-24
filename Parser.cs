@@ -16,21 +16,21 @@ namespace CShargs
             metadata_ = getMetadata();
         }
 
-        protected string ShortOptionSymbol => metadata_.Config.ShortOptionSymbol;
-        protected string LongOptionSymbol => metadata_.Config.LongOptionSymbol;
-        protected string DelimiterSymbol => metadata_.Config.DelimiterSymbol;
-        protected string EqualsSymbol => metadata_.Config.EqualsSymbol;
-        protected OptionFlags OptionFlags => metadata_.Config.OptionFlags;
+        internal string ShortOptionSymbol => metadata_.Config.ShortOptionSymbol;
+        internal string LongOptionSymbol => metadata_.Config.LongOptionSymbol;
+        internal string DelimiterSymbol => metadata_.Config.DelimiterSymbol;
+        internal string EqualsSymbol => metadata_.Config.EqualsSymbol;
+        internal OptionFlags OptionFlags => metadata_.Config.OptionFlags;
 
         /// <summary>
         /// Count of <see cref="PlainArgs"/> will be checked against this at the end of the parsing.
-        /// If not matched <see cref="PlainArgsCountException"/> thrown
+        /// If not matched <see cref="PlainArgsCountException"/> is thrown.
         /// </summary>
         protected virtual int PlainArgsRequired => PlainArgs.Count;
 
         private int skip;
         /// <summary>
-        /// The parser will skip next n arguments.
+        /// The amount of arguments that the parser will skip.
         /// </summary>
         protected int Skip {
             get => skip;
@@ -275,7 +275,7 @@ namespace CShargs
                 }
             }
         }
-        
+
         internal void ParseOption(OptionMetadata option, string value)
         {
             if (option.GetType() != typeof(FlagOption) && parsedOptions_.Contains(option)) {
@@ -345,7 +345,7 @@ namespace CShargs
 
                 output.WriteLine();
             } else {
-                int maxShortName = metadata_.OptionsByProperty.Values                
+                int maxShortName = metadata_.OptionsByProperty.Values
                     .Select(o => o.ShortName != '\0' ? o.GetRawName(out _, true).Length : 0).Max();
                 int maxLongName = metadata_.OptionsByProperty.Values
                     .Select(o => o.LongName != null ? o.GetRawNameWithMetavar(out _, false).Length : 0).Max();
