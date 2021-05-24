@@ -8,9 +8,8 @@ namespace CShargs
 {
 
     /// <summary>
-    /// Enumeration of different option
+    /// Enumeration of different parsing configurations
     /// </summary>
-
     [Flags]
     public enum OptionFlags
     {
@@ -73,20 +72,52 @@ namespace CShargs
     }
 
 
+    /// <summary>
+    /// Interface that represents configuration of parser
+    /// </summary>
     public interface IParserConfig
     {
+        /// <summary>
+        /// Name of command
+        /// </summary>
         string CommandName { get; }
+        /// <summary>
+        /// Parser configurations from <see cref="OptionFlags"/>> enum
+        /// </summary>
         OptionFlags OptionFlags { get; }
+        /// <summary>
+        /// Symbol with which short options are denoted 
+        /// </summary>
         string ShortOptionSymbol { get; }
+        /// <summary>
+        /// Symbol with which long options are denoted
+        /// </summary>
         string LongOptionSymbol { get; }
+        /// <summary>
+        /// Symbol that separates plain arguments from options
+        /// </summary>
         string DelimiterSymbol { get; }
+        /// <summary>
+        /// Symbol used with value options: -n=5 --number-of-cats=5
+        /// </summary>
         string EqualsSymbol { get; }
     }
 
+    /// <summary>
+    /// Attribute for changing default parser configuration
+    /// Target is the parser class
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class ParserConfigAttribute : Attribute, IParserConfig
+    public sealed class ParserConfigAttribute : Attribute, IParserConfig
     {
 
+        /// <summary>
+        /// Checks made for parser config:
+        /// - If option symbols are the same for short and long options, aggregation must be forbidden.
+        /// - Long option symbol must be same length or longer than short option symbol
+        /// - Short and long option symbols and command name cannot be null.
+        /// If checks fail, Configuration exception is thrown. <see cref="ConfigurationException"/>
+        /// </summary>
         public ParserConfigAttribute(
             string commandName = "command",
             OptionFlags optionFlags = OptionFlags.Default,
