@@ -11,7 +11,7 @@ namespace CShargs
 {
     public abstract class Parser
     {
-        public Parser()
+        protected Parser()
         {
             metadata_ = getMetadata();
         }
@@ -24,6 +24,7 @@ namespace CShargs
 
         /// <summary>
         /// Count of <see cref="PlainArgs"/> will be checked against this at the end of the parsing.
+        /// If not matched <see cref="PlainArgsCountException"/> thrown
         /// </summary>
         protected virtual int PlainArgsRequired => PlainArgs.Count;
 
@@ -48,6 +49,9 @@ namespace CShargs
         private TokenReader tokens_;
         private ParserMetadata metadata_;
 
+        /// <summary>
+        /// Indicates if parser instance was used -> holds parsed arguments
+        /// </summary>
         public bool Parsed { get; private set; }
 
         /// <summary>
@@ -66,6 +70,7 @@ namespace CShargs
         ///
         /// If parsing fails, <see cref="ParsingException" /> is thrown
         /// </summary>
+        /// <param name="args">List of command line arguments to parse</param>
         public void Parse(string[] args)
         {
             ThrowIf.ArgumentNull(nameof(args), args);
@@ -270,7 +275,7 @@ namespace CShargs
                 }
             }
         }
-
+        
         internal void ParseOption(OptionMetadata option, string value)
         {
             if (option.GetType() != typeof(FlagOption) && parsedOptions_.Contains(option)) {
@@ -297,12 +302,22 @@ namespace CShargs
             return typeMetadata_[type];
         }
 
+        /// <summary>
+        /// Generates help text for command
+        /// </summary>
+        /// <param name="shortHelp">Short help includes 1 line with command and options, omits help texts of options. Default short.</param>
+        /// <returns>Help text as string</returns>
         public string GenerateHelp(bool shortHelp = true)
         {
             StringWriter sw = new();
             GenerateHelp(sw, shortHelp);
             return sw.ToString();
         }
+        /// <summary>
+        /// Generates help text for command and writes it to given TextWriter
+        /// </summary>
+        /// <param name="output">Output TextWriter</param>
+        /// <param name="shortHelp">Short help includes 1 line with command and options, omits help texts of options. Default short.</param>
         public void GenerateHelp(TextWriter output, bool shortHelp = true)
         {
             if (shortHelp) {
