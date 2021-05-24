@@ -16,6 +16,7 @@ namespace CShargs
         public readonly Dictionary<string, OptionMetadata> OptionsByLong = new();
         public readonly Dictionary<string, OptionMetadata> VerbOptions = new();
         public readonly Dictionary<string, OptionMetadata> OptionsByProperty = new();
+        public readonly Dictionary<OptionMetadata, IEnumerable<OptionMetadata>> Dependants = new();
 
         public ParserMetadata(Type userType)
         {

@@ -297,21 +297,94 @@ namespace CShargs
             return typeMetadata_[type];
         }
 
-        public string GenerateHelp()
+        public string GenerateHelp(bool shortHelp = true)
         {
             StringWriter sw = new();
-            GenerateHelp(sw);
+            GenerateHelp(sw, shortHelp);
             return sw.ToString();
         }
-        public void GenerateHelp(TextWriter output) {
-            output.Write($"{metadata_.Config.CommandName}");
-            var groups = metadata_.GetGroups();
-            var groupOptions = groups.SelectMany(group => group.Options).ToHashSet();
+        public void GenerateHelp(TextWriter output, bool shortHelp = true)
+        {
+            if (shortHelp) {
+                output.Write($"{metadata_.Config.CommandName}");
+                var groups = metadata_.GetGroups();
+                var groupOptions = groups.SelectMany(group => group.Options).ToHashSet();
 
-            // first print simple options
-            foreach (var option in metadata_.OptionsByProperty.Values) {
-                if (!groupOptions.Contains(option)) {
-                    output.Write($" {option}");
+                // first print non group options
+                foreach (var option in metadata_.OptionsByProperty.Values) {
+                    if (!groupOptions.Contains(option)) {
+                        if (option.Required) {
+                            output.Write($" {option.GetRawNameWithMetavar()}");
+                        } else {
+                            output.Write($" [{option.GetRawNameWithMetavar()}]");
+                        }
+                    }
+                }
+
+                // then print groups
+                foreach (var group in groups) {
+                    output.Write(group.Required ? " (" : " [");
+                    output.Write(group);
+                    output.Write(group.Required ? ")" : "]");
+                }
+
+                output.WriteLine();
+            } else {
+                int maxShortName = metadata_.OptionsByProperty.Values                
+                    .Select(o => o.ShortName != '\0' ? o.GetRawName(out _, true).Length : 0).Max();
+                int maxLongName = metadata_.OptionsByProperty.Values
+                    .Select(o => o.LongName != null ? o.GetRawNameWithMetavar(out _, false).Length : 0).Max();
+
+                var allOptions = metadata_.OptionsByProperty.Values.OrderBy(o => o.GetName(out _, false));
+                foreach (var option in allOptions) {
+                    string shortName = option.ShortName != '\0' ? ShortOptionSymbol + option.ShortName : "";
+                    string longName = option.LongName != null ? option.GetRawNameWithMetavar(out _, false) : "";
+
+                    output.Write("    ");
+                    output.Write(shortName.PadLeft(maxShortName));
+
+                    output.Write(shortName != "" ? ", " : "  ");
+                    output.Write(longName.PadRight(maxLongName));
+                    output.Write(" ");
+
+                    List<string> rawHelpText = new();
+                    rawHelpText.Add(option.HelpText);
+                    if (option.Required && option.UseWith == null) {
+                        rawHelpText.Add("This option is required.");
+                    } else if (!option.Required && option.UseWith != null) {
+                        rawHelpText.Add($"Use only with {option.UseWith.GetRawName()}.");
+                    } else if (option.Required && option.UseWith != null) {
+                        rawHelpText.Add($"When {option} used, this must be also specified.");
+                    }
+
+                    int maxLineLength = 40, i = 0;
+                    string newlinePad = "\n" + new string(' ', 6 + maxLongName + maxShortName);
+                    var words = rawHelpText
+                        .SelectMany(s => s.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                        .SelectMany(s => {
+                            var split = s.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                            for (int i = 0; i < split.Length - 1; i++)
+                                split[i] += "\n";
+                            return split;
+                        });
+
+                    foreach (string word in words) {
+                        string space = i == 0 ? "" : " ";
+
+                        if (i != 0 && i + word.Trim(' ', '\n').Length - 1 + space.Length > maxLineLength) {
+                            i = 0;
+                            output.Write(newlinePad);
+                        }
+                        output.Write(space + word);
+
+                        if (!word.Contains('\n')) {
+                            i += word.Length + space.Length;
+                        } else {
+                            i = 0;
+                        }
+                    }
+
+                    output.WriteLine();
                 }
             }
         }

@@ -18,6 +18,7 @@ namespace CShargs
         public OptionMetadata UseWith { get; set; }
         public string UseWithName => attribute_.UseWith;
         public char ShortName => attribute_.ShortName;
+        public string HelpText => attribute_.HelpText;
 
         public OptionMetadata(ParserMetadata parserMeta, MemberInfo member, IOptionAttribute attribute)
         {
@@ -33,13 +34,27 @@ namespace CShargs
         public abstract void Parse(Parser parser, string value, TokenReader tokens);
         protected abstract void SetValue(object instance, object value);
 
-        public virtual string GetRawName(bool preferShort = true)
+        public string GetName() => GetName(out _);
+        public virtual string GetName(out bool shortGiven, bool preferShort = true)
         {
-            if (preferShort && attribute_.ShortName != '\0') {
-                return parserMeta_.Config.ShortOptionSymbol + attribute_.ShortName;
+            if ((preferShort || LongName == null) && ShortName != '\0') {
+                shortGiven = true;
+                return ShortName.ToString();
             }
 
-            return parserMeta_.Config.LongOptionSymbol + LongName;
+            shortGiven = false;
+            return LongName;
+        }
+        public string GetRawName() => GetRawName(out _);
+        public virtual string GetRawName(out bool shortGiven, bool preferShort = true)
+        {
+            string name = GetName(out shortGiven, preferShort);
+            return (shortGiven ? parserMeta_.Config.ShortOptionSymbol : parserMeta_.Config.LongOptionSymbol) + name;
+        }
+        public string GetRawNameWithMetavar() => GetRawNameWithMetavar(out _);
+        public virtual string GetRawNameWithMetavar(out bool shortGiven, bool preferShort = true)
+        {
+            return GetRawName(out shortGiven, preferShort);
         }
 
         public IEnumerable<IRule> ExtractRules()
@@ -52,11 +67,6 @@ namespace CShargs
                 rules.Add(new DependencyRule(this));
             }
             return rules;
-        }
-
-        public override string ToString()
-        {
-            return GetRawName();
         }
     }
 
@@ -110,11 +120,11 @@ namespace CShargs
         protected override void SetValue(object userObject, object value)
             => Property.SetValue(userObject, value);
 
-        public override string GetRawName(bool preferShort = true)
+        public override string GetRawNameWithMetavar(out bool shortGiven, bool preferShort = true)
         {
-            if (preferShort && attribute_.ShortName != '\0') {
-                string name = base.GetRawName(true);
+            string name = base.GetRawNameWithMetavar(out shortGiven, preferShort);
 
+            if (shortGiven) {
                 if (!parserMeta_.Config.OptionFlags.HasFlag(OptionFlags.ForbidShortEquals)) {
                     name += parserMeta_.Config.EqualsSymbol + MetaVar;
                 } else if (!parserMeta_.Config.OptionFlags.HasFlag(OptionFlags.ForbidShortSpace)) {
@@ -124,8 +134,6 @@ namespace CShargs
                 }
                 return name;
             } else {
-                string name = base.GetRawName(false);
-
                 if (!parserMeta_.Config.OptionFlags.HasFlag(OptionFlags.ForbidLongEquals)) {
                     name += parserMeta_.Config.EqualsSymbol + MetaVar;
                 } else if (!parserMeta_.Config.OptionFlags.HasFlag(OptionFlags.ForbidLongSpace)) {

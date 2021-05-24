@@ -5,7 +5,6 @@ using System.Text;
 
 namespace CShargs
 {
-
     interface IRule
     {
         public void Check(ICollection<OptionMetadata> parsedOptions);

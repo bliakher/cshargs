@@ -22,6 +22,7 @@ namespace CShargs
             // generate structured help, write it to console
             if (arguments.Help) {
                 arguments.GenerateHelp(Console.Out);
+                arguments.GenerateHelp(Console.Out, false);
             }
 
             // get parsed plain arguments
