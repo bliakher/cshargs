@@ -23,7 +23,7 @@ namespace CShargs
     }
 
     /// <summary>
-    /// Thrown during runtime when there is an error in the given arguments.
+    /// Thrown during runtime when there is an error in parsing the given arguments.
     /// </summary>
     public abstract class ParsingException : Exception
     {
@@ -31,6 +31,9 @@ namespace CShargs
             : base(message, innerException) { }
     }
 
+    /// <summary>
+    /// For errors that involve specific option
+    /// </summary>
     public abstract class OptionException : ParsingException
     {
 
@@ -55,6 +58,9 @@ namespace CShargs
             : base(optionName, $"Unknown option '{optionName}'", innerException) { }
     }
 
+    /// <summary>
+    /// Thrown when one option is encountered twice.
+    /// </summary>
     public class DuplicateOptionException : OptionException
     {
         internal DuplicateOptionException(string optionName, Exception innerException = null)
@@ -72,7 +78,7 @@ namespace CShargs
     }
 
     /// <summary>
-    /// Thrown when a required option is missing
+    /// Thrown when a required option is missing.
     /// </summary>
     public class MissingOptionException : OptionException
     {
@@ -80,6 +86,9 @@ namespace CShargs
             : base(optionName, $"Missing required option '{optionName}'.", innerException) { }
     }
 
+    /// <summary>
+    /// Thrown when parameter of value option is missing.
+    /// </summary>
     public class MissingOptionValueException : OptionException
     {
         internal MissingOptionValueException(string optionName, Exception innerException = null)
@@ -96,9 +105,12 @@ namespace CShargs
             : base($"Missing option from required group ( {String.Join(" | ", groupOptions)} )", innerException) { }
     }
 
-    public class TooManyOptionsException : ParsingException
+    /// <summary>
+    /// Thrown when multiple options from an exclusive group are used.
+    /// </summary>
+    public class MultipleOptionsFromGroupException : ParsingException
     {
-        internal TooManyOptionsException(IEnumerable<string> groupOptions, Exception innerException = null)
+        internal MultipleOptionsFromGroupException(IEnumerable<string> groupOptions, Exception innerException = null)
             : base($"You can't use multiple options from exclusive group ( {String.Join(" | ", groupOptions)} )", innerException) { }
     }
 
@@ -112,7 +124,7 @@ namespace CShargs
     }
 
     /// <summary>
-    /// Thrown when a a useWith dependency of option is missing
+    /// Thrown when a useWith dependency of option is missing
     /// </summary>
     public class MissingDependencyException : OptionException
     {
@@ -120,6 +132,9 @@ namespace CShargs
             : base(optionName, $"Option {optionName} is used without dependency {dependencyName}", innerException) { }
     }
 
+    /// <summary>
+    /// Thrown when count of plain arguments doesn't match the required count
+    /// </summary>
     public class PlainArgsCountException : ParsingException
     {
         internal PlainArgsCountException(string message, Exception inner = null)

@@ -107,7 +107,7 @@ namespace CShargs
                 throw new MissingGroupException(getOptionNames());
             }
             if (count > 1) {
-                throw new TooManyOptionsException(getOptionNames());
+                throw new MultipleOptionsFromGroupException(getOptionNames());
             }
             if (count == 1 && UseWith != null && !parsedOptions.Contains(UseWith)) {
                 throw new MissingDependencyException(usedName, UseWith.GetRawName());
