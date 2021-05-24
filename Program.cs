@@ -4,13 +4,15 @@ using System.Reflection;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Tests")]
 
-namespace CShargs {
+namespace CShargs
+{
 
-    class Program {
-        static void Main(string[] args) {
-
+    class Program
+    {
+        static void Main(string[] args)
+        {
             var arguments = new Examples.TimeArguments();
-            arguments.Parse(args);
+            arguments.Parse(new[] { "--help" });
 
             // check version option
             if (arguments.Version) {
@@ -18,7 +20,9 @@ namespace CShargs {
             }
 
             // generate structured help, write it to console
-            arguments.GenerateHelp(Console.Out); 
+            if (arguments.Help) {
+                arguments.GenerateHelp(Console.Out);
+            }
 
             // get parsed plain arguments
             var plainArgs = arguments.PlainArgs;

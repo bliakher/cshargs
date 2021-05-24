@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace CShargs
 {
@@ -21,8 +22,14 @@ namespace CShargs
 
         public void Check(ICollection<OptionMetadata> parsedOptions)
         {
-            if (!parsedOptions.Contains(target)) {
-                throw new MissingOptionException(target.LongName);
+            if (target.UseWith == null) {
+                if (!parsedOptions.Contains(target)) {
+                    throw new MissingOptionException(target.LongName);
+                }
+            } else {
+                if (parsedOptions.Contains(target.UseWith) && !parsedOptions.Contains(target)) {
+                    throw new MissingOptionException(target.LongName);
+                }
             }
         }
     }
@@ -42,28 +49,40 @@ namespace CShargs
             var dependency = target.UseWith;
 
             if (parsedOptions.Contains(target) && !parsedOptions.Contains(dependency)) {
-                throw new OptionDependencyError(target.LongName, dependency.LongName);
+                throw new MissingDependencyException(target.LongName, dependency.LongName);
             }
         }
     }
-    
+
     internal class GroupRule : IRule
     {
         private HashSet<OptionMetadata> groupOptions_ = new();
         private OptionGroupAttribute attribute_;
         public bool Required => attribute_.Required;
+        public OptionMetadata UseWith { get; }
 
         public GroupRule(OptionGroupAttribute groupAttribute, IDictionary<string, OptionMetadata> optionProperties)
         {
             attribute_ = groupAttribute;
+
+            if (groupAttribute.useWith != null) {
+                if (!optionProperties.ContainsKey(groupAttribute.useWith)) {
+                    throw new ConfigurationException($"Property name '{groupAttribute.useWith}' not known in group {this}.");
+                }
+                UseWith = optionProperties[groupAttribute.useWith];
+            }
+
             foreach (var name in attribute_.OptionGroup) {
                 if (!optionProperties.ContainsKey(name)) {
-                    throw new ConfigurationException($"Error in option groups, property name '{name}' not known.");
+                    throw new ConfigurationException($"Property name '{name}' not known in group {this}.");
                 }
                 var option = optionProperties[name];
 
                 if (option.Required) {
-                    throw new ConfigurationException($"Can't have required option '{option.LongName}' in required group.");
+                    throw new ConfigurationException($"Can't have required option '{option.GetRawName()}' in required group {this}.");
+                }
+                if (option.UseWith != null) {
+                    throw new ConfigurationException($"Can't have required option '{option.GetRawName()}' in required group {this}.");
                 }
 
                 groupOptions_.Add(option);
@@ -71,20 +90,49 @@ namespace CShargs
         }
         public void Check(ICollection<OptionMetadata> parsedOptions)
         {
+            string usedName = null;
             int count = 0;
+            bool checkRequired = Required;
+
+            checkRequired &= UseWith == null || parsedOptions.Contains(UseWith);
+
             foreach (var option in parsedOptions) {
                 if (groupOptions_.Contains(option)) {
                     count++;
+                    usedName = option.GetRawName();
                 }
             }
-            if (Required && count == 0) {
+            if (checkRequired && count == 0) {
                 throw new MissingGroupException(getOptionNames());
             }
             if (count > 1) {
-                throw new MultipleOptionsFromExclusiveGroup(getOptionNames());
+                throw new TooManyOptionsException(getOptionNames());
+            }
+            if (count == 1 && UseWith != null && !parsedOptions.Contains(UseWith)) {
+                throw new MissingDependencyException(usedName, UseWith.GetRawName());
             }
         }
 
         private IEnumerable<string> getOptionNames() => groupOptions_.Select(opt => opt.GetRawName());
+
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            if (Required) {
+                sb.Append("( ");
+            } else {
+                sb.Append("[ ");
+            }
+
+            sb.Append(string.Join(" | ", getOptionNames()));
+
+            if (Required) {
+                sb.Append(" )");
+            } else {
+                sb.Append(" ]");
+            }
+
+            return sb.ToString();
+        }
     }
 }

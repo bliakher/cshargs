@@ -17,6 +17,10 @@ TODO list:
 - aggregation 
     - case insensitive
 
+HELP PRINT:
+- add meta-vars, default to prop name
+    - override ValueOption get raw name
+
 TESTS:
 + check different case-sensitivity cases
     + short-case-insensitive

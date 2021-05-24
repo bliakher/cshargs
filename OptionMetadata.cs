@@ -80,9 +80,9 @@ namespace CShargs
             : base(parserMeta, prop, attribute) { }
 
         public override void Parse(Parser parser, string valueStr, TokenReader tokens)
-        {            
+        {
             // TODO: check parser options
-            if (valueStr == null) { 
+            if (valueStr == null) {
                 if (tokens.EndOfList) {
                     throw new MissingOptionValueException(tokens.Peek(-1));
                 }
@@ -93,12 +93,8 @@ namespace CShargs
             if (Property.PropertyType == typeof(string)) {
                 value = valueStr;
             } else {
-                try {
-                    // ex: int.Parse(...)
-                    value = InvokeStaticParseMethod(valueStr);
-                } catch (FormatException ex) {
-                    throw new ValueOptionFormatException(tokens.Peek(-1), ex);
-                }
+                // ex: int.Parse(...)
+                value = InvokeStaticParseMethod(valueStr);
             }
             SetValue(parser, value);
         }
@@ -163,7 +159,13 @@ namespace CShargs
             => SetValue(parser, tokens.Peek(-1));
 
         protected override void SetValue(object instance, object value)
-            => Method.Invoke(instance, new[] { value });
+        {
+            try {
+                Method.Invoke(instance, new[] { value });
+            } catch (TargetInvocationException e) {
+                throw e.InnerException;
+            }
+        }
     }
 
     internal class VerbOption : OptionMetadata
@@ -203,8 +205,6 @@ namespace CShargs
         }
 
         protected override void SetValue(object instance, object value)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new InvalidOperationException();
     }
 }

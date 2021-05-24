@@ -38,12 +38,23 @@ namespace Tests
             Assert.Throws<MissingGroupException>(() => arguments.Parse(new string[] { "--verbose", "file" }));
         }
 
-        [Fact]
-        public void RequiredOptionInsideOptionGroupThrows()
+        [Theory]
+        [InlineData(new[] { "file.txt" }, false)]
+        [InlineData(new[] { "file.txt", "--print", "--tostderr" }, false)]
+        [InlineData(new[] { "file.txt", "--print", "--tofile=out.txt" }, false)]
+        [InlineData(new[] { "file.txt", "--tostderr" }, true)]
+        [InlineData(new[] { "file.txt", "--tofile=out.txt" }, true)]
+        public void MissingGroupDependencyThrows(string[] args, bool expectThrows)
         {
             // Arrange
+            var parser = new GroupDependenciesArguments();
+
             // Act and assert
-            Assert.Throws<ConfigurationException>(() => new InvalidConfigurationGroupArguments());
+            if (expectThrows) {
+                Assert.Throws<MissingDependencyException>(() => parser.Parse(args));
+            } else {
+                parser.Parse(args);
+            }
         }
     }
 }

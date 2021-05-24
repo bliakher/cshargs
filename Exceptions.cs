@@ -89,9 +89,9 @@ namespace CShargs
             : base($"Missing option from required group ( {String.Join(" | ", groupOptions)} )", innerException) { }
     }
 
-    public class MultipleOptionsFromExclusiveGroup : ParsingException
+    public class TooManyOptionsException : ParsingException
     {
-        internal MultipleOptionsFromExclusiveGroup(IEnumerable<string> groupOptions, Exception innerException = null)
+        internal TooManyOptionsException(IEnumerable<string> groupOptions, Exception innerException = null)
             : base($"You can't use multiple options from exclusive group ( {String.Join(" | ", groupOptions)} )", innerException) { }
     }
 
@@ -107,9 +107,9 @@ namespace CShargs
     /// <summary>
     /// Thrown when a a useWith dependency of option is missing
     /// </summary>
-    public class OptionDependencyError : OptionException
+    public class MissingDependencyException : OptionException
     {
-        internal OptionDependencyError(string optionName, string dependencyName, Exception innerException = null)
+        internal MissingDependencyException(string optionName, string dependencyName, Exception innerException = null)
             : base(optionName, $"Option {optionName} is used without dependency {dependencyName}", innerException) { }
     }
 

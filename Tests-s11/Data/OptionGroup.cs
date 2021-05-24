@@ -24,4 +24,19 @@ namespace Tests.Data
         [ValueOption("output", shortName: 'o', help: "Do not send the results to stderr, but overwrite the specified file.")]
         public string OutputFile { get; set; }
     }
+
+
+    [OptionGroup(false, nameof(ToFile), nameof(ToStdErr), useWith = nameof(Print))]
+    class GroupDependenciesArguments : Parser
+    {
+
+        [FlagOption("print", shortName: 'p', help: "Print out progress")]
+        public bool Print { get; set; }
+
+        [ValueOption("tofile")]
+        public string ToFile { get; set; }
+
+        [FlagOption("tostderr")]
+        public bool ToStdErr { get; set; }
+    }
 }

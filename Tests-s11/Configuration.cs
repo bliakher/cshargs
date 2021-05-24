@@ -88,5 +88,13 @@ namespace Tests
         {
             Assert.Throws<ConfigurationException>(() => { var p = new BadParserPrivateOptions(); });
         }
+
+        [Fact]
+        public void RequiredOptionInsideOptionGroupThrows()
+        {
+            // Arrange
+            // Act and assert
+            Assert.Throws<ConfigurationException>(() => new InvalidConfigurationGroupArguments());
+        }
     }
 }

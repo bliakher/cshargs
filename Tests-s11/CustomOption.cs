@@ -2,6 +2,7 @@
 using Xunit;
 
 using Tests.Data;
+using CShargs;
 
 // I had to set CShargs assembly InternalsVisibleTo("Tests")
 // as Parser class, Option classes etc. are internal only
@@ -18,10 +19,8 @@ namespace Tests
         {
             // Arrange
             var arguments = new VectorArguments();
-
             // Act
             arguments.Parse(args);
-
             // Assert
             Assert.Equal(vectorValues[0], arguments.Position.First);
             Assert.Equal(vectorValues[1], arguments.Position.Second);
@@ -35,7 +34,7 @@ namespace Tests
             var arguments = new VectorArguments();
 
             // Act and assert
-            Assert.Throws<FormatException>(() => arguments.Parse(new string[] { "--pos", "1", "2" }));
+            Assert.Throws<ValueOptionFormatException>(() => arguments.Parse(new string[] { "--pos", "1", "2" }));
         }
     }
 }

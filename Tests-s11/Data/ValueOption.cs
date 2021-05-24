@@ -15,6 +15,30 @@ namespace Tests.Data
         [ValueOption("full-name", shortName: 'n', help: "Enter fullname in firstName;lastName format.")]
         public FullName Name { get; set; }
     }
+    [ParserConfig(OptionFlags.ForbidLongSpace | OptionFlags.ForbidShortSpace)]
+    class FileOptionalArgumentsForbidSpace : Parser
+    {
+        [ValueOption("output", shortName: 'o', required: false, help: "Do not send the results to stderr, but overwrite the specified file.")]
+        public string OutputFile { get; set; }
+    }
+    [ParserConfig(OptionFlags.ForbidShortNoSpace)]
+    class FileOptionalArgumentsForbidNoSpace : Parser
+    {
+        [ValueOption("output", shortName: 'o', required: false, help: "Do not send the results to stderr, but overwrite the specified file.")]
+        public string OutputFile { get; set; }
+    }
+    [ParserConfig(OptionFlags.ForbidLongEquals | OptionFlags.ForbidShortEquals)]
+    class FileOptionalArgumentsForbidEquals : Parser
+    {
+        [ValueOption("output", shortName: 'o', required: false, help: "Do not send the results to stderr, but overwrite the specified file.")]
+        public string OutputFile { get; set; }
+    }
+    [ParserConfig(OptionFlags.ForbidLongEquals | OptionFlags.ForbidShortEquals | OptionFlags.ForbidShortNoSpace)]
+    class FileOptionalArgumentsForbidEqualsNoSpace : Parser
+    {
+        [ValueOption("output", shortName: 'o', required: false, help: "Do not send the results to stderr, but overwrite the specified file.")]
+        public string OutputFile { get; set; }
+    }
 
     [ParserConfig(optionFlags: OptionFlags.ShortCaseInsensitive)]
     class FileOptionalArguments_ShortCI : Parser
@@ -52,7 +76,7 @@ namespace Tests.Data
     {
         public string FirstName { get; }
         public string LastName { get; }
-        public FullName (string firstName, string lastName)
+        public FullName(string firstName, string lastName)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -75,22 +99,17 @@ namespace Tests.Data
             string firstName = string.Empty;
             string lastName = string.Empty;
 
-            while (index < str.Length)
-            {
-                if (str[index] == delimiter)
-                {
+            while (index < str.Length) {
+                if (str[index] == delimiter) {
                     firstName = namePart.ToString();
                     namePart.Clear();
-                }
-                else
-                {
+                } else {
                     namePart.Append(str[index]);
                 }
                 index++;
             }
 
-            if (namePart.Length > 0)
-            {
+            if (namePart.Length > 0) {
                 lastName = namePart.ToString();
             }
 
@@ -99,18 +118,15 @@ namespace Tests.Data
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(this, obj))
-            {
+            if (ReferenceEquals(this, obj)) {
                 return true;
             }
 
-            if (ReferenceEquals(obj, null))
-            {
+            if (ReferenceEquals(obj, null)) {
                 return false;
             }
 
-            if (obj.GetType() == this.GetType())
-            {
+            if (obj.GetType() == this.GetType()) {
                 var name = (FullName)obj;
                 return (name.FirstName == this.FirstName)
                         && (name.LastName == this.LastName);

@@ -7,6 +7,7 @@ using Tests.Data;
 // and thus it is not possible to create their instance in
 // a different project
 using CShargs;
+using System;
 
 namespace Tests
 {
@@ -14,17 +15,106 @@ namespace Tests
     {
         [Theory]
         [InlineData(new string[] { "--output=File.out" }, "File.out")]
+        [InlineData(new string[] { "--output", "File.out" }, "File.out")]
         [InlineData(new string[] { "-o", "File.out" }, "File.out")]
         [InlineData(new string[] { "-oFile.out" }, "File.out")]
+        [InlineData(new string[] { "-o=File.out" }, "File.out")]
         [InlineData(new string[] { "command" }, null)]
-        public void ValueOptionStringParsed(string[] args, string parameterValue)
+        public void ValueOptionStringParsed(string[] args, string parsedValue, Type exceptionType = null)
         {
             // Arrange
             var arguments = new FileOptionalArguments();
-            // Act
-            arguments.Parse(args);
-            // Assert
-            Assert.Equal(parameterValue, arguments.OutputFile);
+
+            if (exceptionType == null) {
+                // Act
+                arguments.Parse(args);
+                // Assert
+                Assert.Equal(parsedValue, arguments.OutputFile);
+            } else {
+                Assert.Throws(exceptionType, () => arguments.Parse(args));
+            }
+        }
+        [Theory]
+        [InlineData(new string[] { "--output=File.out" }, "File.out")]
+        [InlineData(new string[] { "--output", "File.out" }, null, typeof(MissingOptionValueException))]
+        [InlineData(new string[] { "-o", "File.out" }, null, typeof(MissingOptionValueException))]
+        [InlineData(new string[] { "-oFile.out" }, "File.out")]
+        [InlineData(new string[] { "-o=File.out" }, "File.out")]
+        [InlineData(new string[] { "command" }, null)]
+        public void ValueOptionStringParsedForbidSpace(string[] args, string parsedValue, Type exceptionType = null)
+        {
+            // Arrange
+            var arguments = new FileOptionalArgumentsForbidSpace();
+
+            if (exceptionType == null) {
+                // Act
+                arguments.Parse(args);
+                // Assert
+                Assert.Equal(parsedValue, arguments.OutputFile);
+            } else {
+                Assert.Throws(exceptionType, () => arguments.Parse(args));
+            }
+        }
+        [Theory]
+        [InlineData(new string[] { "--output=File.out" }, "File.out")]
+        [InlineData(new string[] { "--output", "File.out" }, "File.out")]
+        [InlineData(new string[] { "-o", "File.out" }, "File.out")]
+        [InlineData(new string[] { "-oFile.out" }, null, typeof(UnknownOptionException))]
+        [InlineData(new string[] { "-o=File.out" }, "File.out")]
+        [InlineData(new string[] { "command" }, null)]
+        public void ValueOptionStringParsedForbidNoSpace(string[] args, string parsedValue, Type exceptionType = null)
+        {
+            // Arrange
+            var arguments = new FileOptionalArgumentsForbidNoSpace();
+
+            if (exceptionType == null) {
+                // Act
+                arguments.Parse(args);
+                // Assert
+                Assert.Equal(parsedValue, arguments.OutputFile);
+            } else {
+                Assert.Throws(exceptionType, () => arguments.Parse(args));
+            }
+        }
+        [Theory]
+        [InlineData(new string[] { "--output=File.out" }, null, typeof(UnknownOptionException))]
+        [InlineData(new string[] { "-o", "File.out" }, "File.out", null)]
+        [InlineData(new string[] { "-oFile.out" }, "File.out", null)]
+        [InlineData(new string[] { "-o=File.out" }, "=File.out")]
+        [InlineData(new string[] { "command" }, null, null)]
+        public void ValueOptionStringParsedForbidEquals(string[] args, string parsedValue, Type exceptionType = null)
+        {
+            // Arrange
+            var arguments = new FileOptionalArgumentsForbidEquals();
+
+            if (exceptionType == null) {
+                // Act
+                arguments.Parse(args);
+                // Assert
+                Assert.Equal(parsedValue, arguments.OutputFile);
+            } else {
+                Assert.Throws(exceptionType, () => arguments.Parse(args));
+            }
+        }
+        [Theory]
+        [InlineData(new string[] { "--output=File.out" }, null, typeof(UnknownOptionException))]
+        [InlineData(new string[] { "-o", "File.out" }, "File.out", null)]
+        [InlineData(new string[] { "-oFile.out" }, null, typeof(UnknownOptionException))]
+        [InlineData(new string[] { "-o=File.out" }, null, typeof(UnknownOptionException))]
+        [InlineData(new string[] { "command" }, null, null)]
+        public void ValueOptionStringParsedForbidEqualsNoSpace(string[] args, string parsedValue, Type exceptionType = null)
+        {
+            // Arrange
+            var arguments = new FileOptionalArgumentsForbidEqualsNoSpace();
+
+            if (exceptionType == null) {
+                // Act
+                arguments.Parse(args);
+                // Assert
+                Assert.Equal(parsedValue, arguments.OutputFile);
+            } else {
+                Assert.Throws(exceptionType, () => arguments.Parse(args));
+            }
         }
 
         [Theory]

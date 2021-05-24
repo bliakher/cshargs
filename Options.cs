@@ -171,10 +171,12 @@ namespace CShargs
     {
         public string[] OptionGroup { get; }
         public bool Required { get; }
+        public string useWith { get; init; }
 
         public OptionGroupAttribute(
             bool required,
-            params string[] optionGroup)
+            params string[] optionGroup
+            )
         {
             OptionGroup = optionGroup;
             Required = required;

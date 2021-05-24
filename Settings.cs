@@ -65,6 +65,11 @@ namespace CShargs
         /// If present, enum types will be parsed with ignoreCase=true in <see cref="Enum.Parse(Type, string, bool)"/>
         /// </summary>
         EnumCaseInsensitive = 1 << 8,
+
+        /// <summary>
+        /// If present, verb options are case insensitive
+        /// </summary>
+        VerbCaseInsensitive = 1 << 9,
     }
 
 

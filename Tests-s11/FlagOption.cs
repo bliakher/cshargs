@@ -1,6 +1,7 @@
 ﻿using Xunit;
 
 using Tests.Data;
+using System;
 
 // I had to set CShargs assembly InternalsVisibleTo("Tests")
 // as Parser class, Option classes etc. are internal only
@@ -12,7 +13,7 @@ namespace Tests
     public class FlagOption
     {
         [Theory]
-        [InlineData(new string[]{"--verbose"}, true)]
+        [InlineData(new string[] { "--verbose" }, true)]
         [InlineData(new string[] { "-v" }, true)]
         [InlineData(new string[] { "--verbose", "command" }, true)]
         [InlineData(new string[] { "command", "file" }, false)]
@@ -26,6 +27,65 @@ namespace Tests
 
             // Assert
             Assert.Equal(optionParsed, arguments.Verbose);
+        }
+
+        [Theory]
+        [InlineData(new string[] { "--verbose" }, true, null)]
+        [InlineData(new string[] { "-v" }, true, null)]
+        [InlineData(new string[] { "--verbose", "command" }, true, null)]
+        [InlineData(new string[] { "command", "file" }, false, null)]
+        public void IsFlagOptionPresentForbidSpace(string[] args, bool optionParsed, Type exceptionType)
+        {
+            // Arrange
+            var arguments = new FlagArgumentsForbidSpace();
+
+            if (exceptionType == null) {
+                // Act
+                arguments.Parse(args);
+                // Assert
+                Assert.Equal(optionParsed, arguments.Verbose);
+            } else {
+                Assert.Throws(exceptionType, () => arguments.Parse(args));
+            }
+        }
+
+        [Theory]
+        [InlineData(new string[] { "--verbose" }, true, null)]
+        [InlineData(new string[] { "-v" }, true, null)]
+        [InlineData(new string[] { "--verbose", "command" }, true, null)]
+        [InlineData(new string[] { "command", "file" }, false, null)]
+        public void IsFlagOptionPresentForbidNoSpace(string[] args, bool optionParsed, Type exceptionType)
+        {
+            // Arrange
+            var arguments = new FlagArgumentsForbidNoSpace();
+
+            if (exceptionType == null) {
+                // Act
+                arguments.Parse(args);
+                // Assert
+                Assert.Equal(optionParsed, arguments.Verbose);
+            } else {
+                Assert.Throws(exceptionType, () => arguments.Parse(args));
+            }
+        }
+        [Theory]
+        [InlineData(new string[] { "--verbose" }, true, null)]
+        [InlineData(new string[] { "-v" }, true, null)]
+        [InlineData(new string[] { "--verbose", "command" }, true, null)]
+        [InlineData(new string[] { "command", "file" }, false, null)]
+        public void IsFlagOptionPresentForbidEquals(string[] args, bool optionParsed, Type exceptionType)
+        {
+            // Arrange
+            var arguments = new FlagArgumentsForbidEquals();
+
+            if (exceptionType == null) {
+                // Act
+                arguments.Parse(args);
+                // Assert
+                Assert.Equal(optionParsed, arguments.Verbose);
+            } else {
+                Assert.Throws(exceptionType, () => arguments.Parse(args));
+            }
         }
 
         [Theory]

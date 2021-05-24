@@ -9,18 +9,18 @@ using TokenReader = CShargs.ListReader<string>;
 
 namespace CShargs
 {
-    public abstract class Parser : IParserConfig
+    public abstract class Parser
     {
         public Parser()
         {
             metadata_ = getMetadata();
         }
 
-        public string ShortOptionSymbol => metadata_.Config.ShortOptionSymbol;
-        public string LongOptionSymbol => metadata_.Config.LongOptionSymbol;
-        public string DelimiterSymbol => metadata_.Config.DelimiterSymbol;
-        public string EqualsSymbol => metadata_.Config.EqualsSymbol;
-        public OptionFlags OptionFlags => metadata_.Config.OptionFlags;
+        protected string ShortOptionSymbol => metadata_.Config.ShortOptionSymbol;
+        protected string LongOptionSymbol => metadata_.Config.LongOptionSymbol;
+        protected string DelimiterSymbol => metadata_.Config.DelimiterSymbol;
+        protected string EqualsSymbol => metadata_.Config.EqualsSymbol;
+        protected OptionFlags OptionFlags => metadata_.Config.OptionFlags;
 
         /// <summary>
         /// Count of <see cref="PlainArgs"/> will be checked against this at the end of the parsing.
@@ -92,7 +92,7 @@ namespace CShargs
 
                         delimited = true;
 
-                    } else if (LongOptionSymbol == ShortOptionSymbol) {
+                    } else if (LongOptionSymbol == ShortOptionSymbol && rawArg.StartsWith(LongOptionSymbol)) {
                         if (!tryParseLong(rawArg) && !tryParseShort(rawArg)) {
                             throw new UnknownOptionException(rawArg);
                         }
@@ -125,9 +125,8 @@ namespace CShargs
 
                         } else if (!tryParseShort(rawArg)) { // only one short option
                             throw new UnknownOptionException(rawArg);
-                        } 
-                    } 
-                    else {
+                        }
+                    } else {
                         bool isVerb = tryParseVerb(rawArg);
                         plain = !isVerb; // if not verb than plain
                     }
@@ -183,15 +182,11 @@ namespace CShargs
                 value = null;
             }
 
-            if (value == null && forbidSpace) {
-                throw new MissingOptionValueException(rawArg);
-            }
-
             if (caseInsensitive) {
                 name = name.ToUpper();
             }
 
-            return tryParse(name, value, metadata_.OptionsByLong);
+            return tryParse(name, value, metadata_.OptionsByLong, forbidSpace);
         }
 
         private bool tryParseShort(string rawArg)
@@ -219,25 +214,26 @@ namespace CShargs
                 value = rawArg.Substring(start + 1);
             }
 
-            if (value == null && forbidSpace) {
-                throw new MissingOptionValueException(rawArg);
-            }
-
             if (name != null) {
                 if (caseInsensitive) {
                     name = name.ToUpper();
                 }
 
-                return tryParse(name, value, metadata_.OptionsByShort);
+                return tryParse(name, value, metadata_.OptionsByShort, forbidSpace);
             }
 
             return false;
         }
 
 
-        private bool tryParse(string argName, string value, IDictionary<string, OptionMetadata> lookup)
+        private bool tryParse(string argName, string value, IDictionary<string, OptionMetadata> lookup, bool forbidSpace)
         {
             if (lookup.TryGetValue(argName, out var option)) {
+
+                if (value == null && option is ValueOption && forbidSpace) {
+                    throw new MissingOptionValueException(tokens_.Peek(-1));
+                }
+
                 ParseOption(option, value);
                 return true;
             }
@@ -246,11 +242,12 @@ namespace CShargs
 
         private bool tryParseVerb(string rawArg)
         {
-            bool caseInsensitive = OptionFlags.HasFlag(OptionFlags.ShortCaseInsensitive);
+            bool caseInsensitive = OptionFlags.HasFlag(OptionFlags.VerbCaseInsensitive);
             if (caseInsensitive) {
                 rawArg = rawArg.ToUpper();
             }
-            return tryParse(rawArg, null, metadata_.VerbOptions);
+
+            return tryParse(rawArg, null, metadata_.VerbOptions, false);
         }
 
         private void parseAggregated(string rawArg)
@@ -280,7 +277,12 @@ namespace CShargs
                 throw new DuplicateOptionException(tokens_.Peek(-1));
             }
 
-            option.Parse(this, value, tokens_);
+            try {
+                option.Parse(this, value, tokens_);
+            } catch (FormatException ex) {
+                throw new ValueOptionFormatException(tokens_.Peek(-1), ex);
+            }
+
             parsedOptions_.Add(option);
         }
 
@@ -290,11 +292,11 @@ namespace CShargs
             if (!typeMetadata_.ContainsKey(type)) {
                 var metadata = new ParserMetadata(type);
                 metadata.LoadAtrributes();
-                typeMetadata_[type] = metadata;
+                return typeMetadata_[type] = metadata;
             }
             return typeMetadata_[type];
         }
-        
+
         public string GenerateHelp()
         {
             StringWriter sw = new();
