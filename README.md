@@ -49,7 +49,7 @@ If your parser configuration contains a conflict, `ConfigurationException` is th
 Flag option attribute is used for options without parameters. The type of the property must be bool.
 - For option name, use the first constructor argument `name`
 - For short alias, use the named argument `shortName`
-- For option that can be used only with some other option use the named argument `useWith` which takes the option property name.
+- For option that can be used only with some other option use the named argument `useWith` (see [Option dependencies]())
 - For help description, use the named argument `help`
 ```c#
     [FlagOption("silent", shortName: 's', help: "No output will be produced to stdout.")]
@@ -74,7 +74,7 @@ Value option has `required` argument. Use this to tell the parser to automatical
 - If `required: false`, the default value of the property is used.
 - If `required: true`, missing option throws an exception.
 - For alias, use the named argument `alias`
-- For option that can be used only with some other option use the named (see [Option dependencies]())
+- For option that can be used only with some other option use the named argument `useWith` (see [Option dependencies]())
 - For help description, use the named argument `help`
 
 
@@ -96,7 +96,7 @@ class GitPushArguments : Parser {
 }
 ```
 
-## Custom option
+## Custom option - TODO - value smt different
 
 If you need an option that needs some context during its own parsing, or you need to interpret the raw arguments in sligtly different way, you can use the `CustomOption` attribute on a method. The signature of the method should be `void MyMethod(string value)`.
 
@@ -125,13 +125,27 @@ class VectorArguments : Parser {
 ```
 
 ## Settings
-- You can set additional rules with parameters given to Parser constructor
-- optionSettings - managing syntax of options eg.
-  - aggregating short options ie. -abc / -a -b -c
-  - syntax of option parameters ie. -c 123 / -c123 / -c=123
-  - case sensitivity
-- choosing symbols to denote short and long options and delimiter
-- all constants are in the class OptionSettings
+
+You can change the default parser configuration by annotating your parser class with `ParserConfigAttribute`.
+Use arguments of attribute constructor:
+- `commandName` (default 'command') name of your command 
+- `shortOptionSymbol` (default '-') symbol with which short options are denoted 
+- `longOptionSymbol` (default '--') symbol with which long options are denoted (length is greater than or equal to short symbol length)
+- `delimiterSymbol` (default '--') symbol that separates plain arguments from options
+- `equalsSymbol` (default '=') symbol used with value options: -n=5 --number-of-cats=5
+- `optionFlags` variety of parser configurations from `OptionFlags` enum
+  - default - case sensitive and all syntax variants allowed
+    - aggregating short options ie. -abc / -a -b -c
+    - syntax of option parameters ie. -c 123 / -c123 / -c=123
+  - use flags to forbid unwanted syntax variants
+
+```c#
+[ParserConfig("time", OptionFlags.ForbidShortEquals | OptionFlags.ForbidLongSpace, shortOptionSymbol: "/", longOptionSymbol: "/")]
+    class TimeArguments : Parser 
+    {
+       // ...
+    }
+```
 
 ## Alias options
 Each option allows you to define one mandatory name and one optional short alias.
@@ -151,7 +165,6 @@ class MyArguments : Parser {
 }
 ```
 You have to use property names of the aliased options. If you wont use them, you will get an exception on parser initialization.
-
 Keep in mind, that the parser class can be annotated with multiple `AliasOption` attributes. Also, you can create one alias for multiple flag options.
 
 ## Option groups
@@ -178,7 +191,8 @@ class CountArguments : Parser {
 
 ## Option dependencies
 
-You can specify that some options are available only when other options are present. Use the `useWith` argument in your option attribute which takes the option property name.
+You can specify that some options are available only when other options are present. 
+Use the `useWith` argument in your option attribute which takes the option property name.
 
 ```c#
 class MyArguments : Parser {
