@@ -9,6 +9,16 @@ using TokenReader = CShargs.ListReader<string>;
 
 namespace CShargs
 {
+    /// <summary>
+    /// Base class for user parser.
+    /// 
+    /// To use automatic argument parsing:
+    /// - Create a custom class which extends this Parser.
+    /// - Annotate class properties with according <see cref="IOptionAttribute"/> attributes.
+    /// - Now you can call <see cref="Parser.Parse"/> to parse arguments automatically to your class.
+    ///
+    /// To generate help text for your class, use the <see cref="Parser.GenerateHelp"/> method.
+    /// </summary>
     public abstract class Parser
     {
         protected Parser()
@@ -26,7 +36,9 @@ namespace CShargs
         /// Count of <see cref="PlainArgs"/> will be checked against this at the end of the parsing.
         /// If not matched <see cref="PlainArgsCountException"/> is thrown.
         /// </summary>
-        protected virtual int PlainArgsRequired => PlainArgs.Count;
+        protected virtual int PlainArgsRequired {
+            get => PlainArgs.Count;
+        }
 
         private int skip;
         /// <summary>
@@ -57,18 +69,23 @@ namespace CShargs
         /// <summary>
         /// List of all plain arguments
         /// </summary>
-        public IReadOnlyList<string> PlainArgs => plainArgs_.AsReadOnly();
+        public IReadOnlyList<string> PlainArgs {
+            get => plainArgs_.AsReadOnly();
+        }
 
         /// <summary>
-        /// View on the raw arguments array starting at the currently parsed argument
+        /// View on the raw arguments array starting at the currently parsed argument.
         /// </summary>
-        protected ArraySegment<string> Arguments => new ArraySegment<string>(rawArgs_, tokens_.Position, rawArgs_.Length - tokens_.Position);
+        protected Span<string> Arguments {
+            get => new Span<string>(rawArgs_, tokens_.Position, rawArgs_.Length - tokens_.Position);
+        }
 
 
         /// <summary>
         /// Do the actual parsing.
-        ///
-        /// If parsing fails, <see cref="ParsingException" /> is thrown
+        /// 
+        /// Parse given arguments and populate the user-defined options according to their values.      
+        /// If parsing fails, <see cref="ParsingException" /> is thrown.
         /// </summary>
         /// <param name="args">List of command line arguments to parse</param>
         public void Parse(string[] args)
