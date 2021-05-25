@@ -23,10 +23,10 @@ Results of parsing are then saved into the fields of the parser class where user
 
 ## Getting started
 Define a class representing the arguments object. 🌊🦈 will populate this object with data from the command line.
-- Create a class that represents arguments of your command (must be child of Parser class)
+- Create a class that represents arguments of your command (must be child of CShargs.Parser class)
 - Properties or methods in the class correspond to command options. Annotate them with attributes to specify kinds of options.
 - Parameters of an option are specified in attribute constructor.
-- To parse arguments, create an instance of this object and call the Parse() function, passing command line arguments to it.
+- To parse arguments, create an instance of this object and call the CShargs.Parser.Parse() function, passing command line arguments to it.
 
 ```{.cs}
 class MyCommandArguments : CShargs.Parser {
