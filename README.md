@@ -1,6 +1,6 @@
-# `🌊🦈` CShargs argument parser
+# 🌊🦈 CShargs argument parser
 
-(Hopefully) easy to use declarative argument parser.
+(Hopefully) easy to use declarative argument parser for C#.
 
 Define a class representing the arguments object. 🌊🦈 will populate this object with data from the command line.
 
