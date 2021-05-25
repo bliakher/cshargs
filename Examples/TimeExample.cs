@@ -29,6 +29,7 @@ namespace CShargs.Examples
     
     // sets one alias -u for -p -v
     [AliasOption("u", nameof(Portable), nameof(Verbose))]
+    // sets command name to 'time'
     // limits syntax of value options - only space for short options and equal sign for long eg. -f FORMAT, --format=FORMAT
     // all other settings are left at default
     [ParserConfig("time", OptionFlags.ForbidShortEquals | OptionFlags.ForbidLongSpace)]
@@ -40,6 +41,7 @@ namespace CShargs.Examples
         [FlagOption("portability", shortName: 'p' , help: "Use the portable output format.")]
         public bool Portable { get; set; }
 
+        // useWith: -a can be used only if -o present
         [FlagOption("append", shortName:'a' , useWith: nameof(OutputFile), help: "(Used together with -o.) Do not overwrite but append.")]
         public bool Append { get; set; }
 

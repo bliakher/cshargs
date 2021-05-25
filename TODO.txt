@@ -7,7 +7,7 @@ TODO list:
 + aliases
     + loading
     + parsing
-- custom options
++ custom options
     + loading
     + parsing
 + split attributes to POCO and parser
@@ -18,10 +18,9 @@ TODO list:
     + case insensitive
 
 HELP PRINT:
---v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v----------------- WIP
 + specify name of command
-- add meta-vars, default to prop name
-    - override ValueOption get raw name
++ add meta-vars, default to prop name
+    + override ValueOption get raw name
 
 TESTS:
 + check different case-sensitivity cases
