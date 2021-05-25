@@ -14,7 +14,7 @@ namespace Tests.Data
         [CustomOption("pos", true, help: "Position of the item.")]
         void ParsePosition(string value)
         {
-            if (Arguments.Count < 3)
+            if (Arguments.Length < 3)
             {
                 throw new FormatException("Not enough arguments");
             }

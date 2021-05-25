@@ -9,10 +9,15 @@ using TokenReader = CShargs.ListReader<string>;
 namespace CShargs
 {
     /// <summary>
-    /// Interface that generalizes all OptionAttribute types
+    /// Interface that generalizes all OptionAttribute types.
+    /// 
+    /// This interface is library-internal, therefore you cannot introduce user implementations.
+    /// However we list it here to make all its descendants visible.
     /// </summary>
-    internal interface IOptionAttribute
+    interface IOptionAttribute
     {
+        /*! \cond PRIVATE */
+
         /// <summary>
         /// Long name of option without option symbol ie. "number-of-cats" for option --number-of-cats
         /// </summary>
@@ -37,9 +42,20 @@ namespace CShargs
         bool CanConcat { get; }
 
         internal OptionMetadata CreateMetadata(ParserMetadata parserMeta, MemberInfo member);
+
+        /*! \endcond */
     }
 
-    /// \addtogroup Options
+
+    /// \addtogroup OptionAttributes
+    /// <summary>
+    /// A list of attributes which are used to define options.
+    /// 
+    /// Annotate your extension of <see cref="Parser"/> with these attributes do define certain behavior for the parser.
+    /// For details, see individual classes in this list.
+    /// </summary>
+    /// @{
+
     /// <summary>
     /// Flag option attribute is used for options without parameters. The type of the target property must be bool.
     /// Target is property inside the parser class
@@ -62,9 +78,6 @@ namespace CShargs
 
         public string LongName { get; private init; }
         public char ShortName { get; private init; }
-        /// <summary>
-        /// Flag option cannot be required
-        /// </summary>
         public bool Required => false;
         public string HelpText { get; private init; }
         public string UseWith { get; private init; }
@@ -264,5 +277,7 @@ namespace CShargs
             Required = required;
         }
     }
+
+    /// @}
 
 }

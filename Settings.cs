@@ -8,7 +8,7 @@ namespace CShargs
 {
 
     /// <summary>
-    /// Enumeration of different parsing configurations
+    /// Enumeration of different flags for configuration of option parsing.
     /// </summary>
     [Flags]
     public enum OptionFlags
@@ -73,42 +73,11 @@ namespace CShargs
 
 
     /// <summary>
-    /// Interface that represents configuration of parser.
-    /// </summary>
-    internal interface IParserConfig
-    {
-        /// <summary>
-        /// Name of command.
-        /// </summary>
-        string CommandName { get; }
-        /// <summary>
-        /// Parser configurations from <see cref="OptionFlags"/>> enum.
-        /// </summary>
-        OptionFlags OptionFlags { get; }
-        /// <summary>
-        /// Symbol with which short options are denoted .
-        /// </summary>
-        string ShortOptionSymbol { get; }
-        /// <summary>
-        /// Symbol with which long options are denoted.
-        /// </summary>
-        string LongOptionSymbol { get; }
-        /// <summary>
-        /// Symbol that separates plain arguments from options.
-        /// </summary>
-        string DelimiterSymbol { get; }
-        /// <summary>
-        /// Symbol used with value options: -n=5 --number-of-cats=5.
-        /// </summary>
-        string EqualsSymbol { get; }
-    }
-
-    /// <summary>
     /// Attribute for changing default parser configuration.
     /// Annotate your parser with this attribute to configure it.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public sealed class ParserConfigAttribute : Attribute, IParserConfig
+    public sealed class ParserConfigAttribute : Attribute
     {
 
         /// <summary>
@@ -147,11 +116,29 @@ namespace CShargs
             EqualsSymbol = equalsSymbol;
         }
 
+        /// <summary>
+        /// Name of command.
+        /// </summary>
         public string CommandName { get; }
+        /// <summary>
+        /// Parser configurations from <see cref="OptionFlags"/>> enum.
+        /// </summary>
         public OptionFlags OptionFlags { get; }
+        /// <summary>
+        /// Symbol with which short options are denoted .
+        /// </summary>
         public string ShortOptionSymbol { get; }
+        /// <summary>
+        /// Symbol with which long options are denoted.
+        /// </summary>
         public string LongOptionSymbol { get; }
+        /// <summary>
+        /// Symbol that separates plain arguments from options.
+        /// </summary>
         public string DelimiterSymbol { get; }
+        /// <summary>
+        /// Symbol used with value options: <code>-n=5 --number-of-cats=5</code>.
+        /// </summary>
         public string EqualsSymbol { get; }
     }
 }
