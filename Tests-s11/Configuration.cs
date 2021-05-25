@@ -96,5 +96,13 @@ namespace Tests
             // Act and assert
             Assert.Throws<ConfigurationException>(() => new InvalidConfigurationGroupArguments());
         }
+
+        [Fact]
+        public void NonSubparserVerbThrows()
+        {
+            // Arrange
+            // Act and assert
+            Assert.Throws<ConfigurationException>(() => new InvalidConfigurationNonParserVerb());
+        }
     }
 }

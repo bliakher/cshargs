@@ -25,6 +25,12 @@ namespace Tests.Data
         public string OutputFile { get; set; }
     }
 
+    class InvalidConfigurationNonParserVerb : Parser
+    {
+        [VerbOption("test")]
+        public string InvalidVerb { get; set; }
+    }
+
 
     [OptionGroup(false, nameof(ToFile), nameof(ToStdErr), UseWith = nameof(Print))]
     class GroupDependenciesArguments : Parser

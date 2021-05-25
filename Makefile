@@ -19,4 +19,4 @@ docs:
 	doxygen doxygen.conf
 
 test:
-    dotnet test
+	dotnet test

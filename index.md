@@ -113,16 +113,16 @@ class VectorArguments : Parser {
     Vector3 position;
     [CustomOption("pos", true, help: "Position of the item.")]
     void ParsePosition(string value) {
-        if (Arguments.Count <= 3) {
+        if (Arguments.Length <= 3) {
             throw new FormatException("Not enough arguments");
         }
 
         Skip = 3;
 
         position = new Vector3(
+            int.Parse(Arguments[0]),
             int.Parse(Arguments[1]),
-            int.Parse(Arguments[2]),
-            int.Parse(Arguments[3])
+            int.Parse(Arguments[2])
         );
     }
 }

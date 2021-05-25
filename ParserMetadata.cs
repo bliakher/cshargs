@@ -107,9 +107,12 @@ namespace CShargs
         private void registerVerbOption(VerbOption option, string name)
         {
             Debug.Assert(name != null);
-            
+
+            if (!option.Property.PropertyType.IsAssignableTo(typeof(Parser))) {
+                throw new ConfigurationException($"Verb option '{name}' must be a descendant of {typeof(Parser)}.");
+            }
             if (VerbOptions.ContainsKey(name)) {
-                throw new ConfigurationException($"Verb option name {name} is duplicate.");
+                throw new ConfigurationException($"Verb option name '{name}' is duplicate.");
             }
             if (Config.OptionFlags.HasFlag(OptionFlags.LongCaseInsensitive)) {
                 name = name.ToUpper();

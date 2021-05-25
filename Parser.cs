@@ -14,7 +14,7 @@ namespace CShargs
     /// 
     /// To use automatic argument parsing:
     /// - Create a custom class which extends this Parser.
-    /// - Annotate class properties with according <see cref="IOptionAttribute"/> attributes.
+    /// - Annotate class properties with according <see cref="OptionAttributes"/> attributes.
     /// - Now you can call <see cref="Parser.Parse"/> to parse arguments automatically to your class.
     ///
     /// To generate help text for your class, use the <see cref="Parser.GenerateHelp"/> method.
@@ -369,15 +369,16 @@ namespace CShargs
 
                 var allOptions = metadata_.OptionsByProperty.Values.OrderBy(o => o.GetName(out _, false));
                 foreach (var option in allOptions) {
-                    string shortName = option.ShortName != '\0' ? ShortOptionSymbol + option.ShortName : "";
+                    string shortName = option.ShortName != '\0' ? option.GetRawName() : "";
                     string longName = option.LongName != null ? option.GetRawNameWithMetavar(out _, false) : "";
+                    string newlinePad = "\n" + new string(' ', 6);
 
-                    output.Write("    ");
-                    output.Write(shortName.PadLeft(maxShortName));
+                    output.Write("  ");
+                    output.Write(shortName);
 
-                    output.Write(shortName != "" ? ", " : "  ");
-                    output.Write(longName.PadRight(maxLongName));
-                    output.Write(" ");
+                    output.Write(shortName != "" ? ", " : "");
+                    output.Write(longName);
+                    output.Write(newlinePad);
 
                     List<string> rawHelpText = new();
                     rawHelpText.Add(option.HelpText);
@@ -389,8 +390,7 @@ namespace CShargs
                         rawHelpText.Add($"When {option} used, this must be also specified.");
                     }
 
-                    int maxLineLength = 40, i = 0;
-                    string newlinePad = "\n" + new string(' ', 6 + maxLongName + maxShortName);
+                    int maxLineLength = 60, i = 0;
                     var words = rawHelpText
                         .SelectMany(s => s.Split(' ', StringSplitOptions.RemoveEmptyEntries))
                         .SelectMany(s => {
@@ -401,12 +401,13 @@ namespace CShargs
                         });
 
                     foreach (string word in words) {
-                        string space = i == 0 ? "" : " ";
 
-                        if (i != 0 && i + word.Trim(' ', '\n').Length - 1 + space.Length > maxLineLength) {
+                        if (i != 0 && i + word.Trim(' ', '\n').Length + 1> maxLineLength) {
                             i = 0;
                             output.Write(newlinePad);
                         }
+
+                        string space = i == 0 ? "" : " ";
                         output.Write(space + word);
 
                         if (!word.Contains('\n')) {
