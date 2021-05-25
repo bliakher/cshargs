@@ -42,6 +42,17 @@ namespace CShargs
         /*! \endcond */
     }
 
+    /// 
+    /// \example TimeExample.cs
+    /// This is an example implementation of argument parser for GNU `time`.
+    /// 
+    /// \example GitExample.cs
+    /// This is an example of a tiny subset of the `git` command.
+    /// It demonstrates the usage of CShargs.VerbOptionAttribute
+    /// 
+    /// \example NumactlExample.cs
+    /// This is an example implementation of the `numactl` command.
+    /// 
 
     /// \addtogroup OptionAttributes
     /// @brief A list of attributes which are used to define options.
@@ -58,7 +69,20 @@ namespace CShargs
     /// The flag option is recognised when the parser sees long/short
     /// symbol followed immediately by long/short name of this option.
     /// To define a flag option for your parser, annotate one of its bool properties with this attrubute.
+    /// 
     /// </summary>
+    /// 
+    /// ## Example
+    /// \dontinclude TimeExample.cs
+    /// Following flag option
+    /// \skipline verbose
+    /// \skipline *
+    /// Could be defined like this
+    /// \skip "verbose"
+    /// \until }
+    /// 
+    /// For full example see \ref TimeExample.cs
+    ///  
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public sealed class FlagOptionAttribute : Attribute, IOptionAttribute
     {
@@ -101,6 +125,7 @@ namespace CShargs
         }
     }
 
+
     /// <summary>
     /// This attribute is used to annotate properties of a custom parser.
     /// 
@@ -110,6 +135,18 @@ namespace CShargs
     /// the option on the command line, the parser will attempt to parse it by standard means, or by calling
     /// <code>public static T Parse(string)</code> on the propery type.
     /// </summary>
+    /// 
+    /// ## Example
+    /// \dontinclude TimeExample.cs
+    /// Following value option
+    /// \skipline format
+    /// \skipline *
+    /// Could be defined like this
+    /// \skip "format"
+    /// \until }
+    /// 
+    /// For full example see \ref TimeExample.cs
+    /// 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public sealed class ValueOptionAttribute : Attribute, IOptionAttribute
     {
@@ -168,6 +205,14 @@ namespace CShargs
     /// To define a verb option for your parser, annotate one of its properties with this attribute.
     /// The type of the property <b>must</b> be a descendant of <see cref="Parser"/>.
     /// </summary>
+    /// 
+    /// ## Example
+    /// \dontinclude GitExample.cs
+    /// \skip "push"
+    /// \until }
+    /// 
+    /// For full example see \ref GitExample.cs
+    /// 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public sealed class VerbOptionAttribute : Attribute, IOptionAttribute
     {
@@ -202,9 +247,20 @@ namespace CShargs
     }
 
     /// <summary>
-    /// For options that need some context during parsing
-    /// Target is method in parser class with signature void MyMethod(string value)
+    /// This attribute is used to annotate methods of a custom parser.
+    /// 
+    /// If you need an option that needs some context during its own parsing,
+    /// or you need to interpret the raw arguments in slightly different way, use custom option.
     /// </summary>
+    /// 
+    /// The annotated method must be of type CShargs.CustomOptionAttribute.Parser
+    /// 
+    /// ## Example
+    /// \dontinclude CustomExample.cs
+    /// \skip //
+    /// \until }
+    /// \until }
+    /// 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public sealed class CustomOptionAttribute : Attribute, IOptionAttribute
     {
@@ -222,6 +278,12 @@ namespace CShargs
             UseWith = useWith;
             HelpText = help;
         }
+
+        /// <summary>
+        /// Delegate of a custom option method.
+        /// </summary>
+        /// <param name="rawValue">The raw parameter from command line.</param>
+        public delegate void Parser(string rawValue);
 
         internal string LongName { get; }
         internal char ShortName { get; }
@@ -242,13 +304,19 @@ namespace CShargs
     }
 
     /// <summary>
-    /// For defining aliases of options
-    /// Target is the parser class
+    /// This attribute is used to annotate the class of a custom parser.
+    /// 
+    /// Aliases are just other ways how to write an existing option.
+    /// Aliases can target multiple flag options at once, or one option of any type.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public sealed class AliasOptionAttribute : Attribute, IOptionAttribute
     {
-
+        /// <summary>
+        /// Create an alias option attached to the specified option(s).
+        /// </summary>
+        /// <param name="alias">Alias name, can be short or long.</param>
+        /// <param name="targets">Names of propeties in parser that are targets of this alias.</param>
         public AliasOptionAttribute(
             string alias,
             params string[] targets)
@@ -258,27 +326,6 @@ namespace CShargs
             ThrowIf.ArgumentNull("Alias", Alias, "Alias name can't be null.");
         }
 
-        /// <summary>
-        /// Alias name, can be short or long
-        /// </summary>
-        /// <summary>
-        /// names of propeties in parser that are targets of alias
-        /// </summary>
-        /// <summary>
-        /// If alias is long, returns Alias -> alias is a long option
-        /// </summary>
-        /// <summary>
-        /// If alias is short, returns Alias -> alias is a short option
-        /// </summary>
-        /// <summary>
-        /// Required always false - required of target option is used
-        /// </summary>
-        /// <summary>
-        /// Dependency always null - dependency of target option is used
-        /// </summary>
-        /// <summary>
-        /// Help text always null - help text of target option is used
-        /// </summary>
         internal string Alias { get; private init; }
         internal IReadOnlyList<string> Targets { get; private init; }
         internal string LongName => Alias.Length != 1 ? Alias : null;
@@ -299,35 +346,38 @@ namespace CShargs
     }
 
     /// <summary>
-    /// For defining exclusive groups of options.
-    /// The <see cref="Parser"/> class is the target.
+    /// This attribute is used to annotate the class of a custom parser.
+    /// 
+    /// You can use option groups to mark certain options to be mutually exclusive.
     /// </summary>
+    /// 
+    /// ## Example
+    /// 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public sealed class OptionGroupAttribute : Attribute
     {
         /// <summary>
-        /// Names of properties in parser that are part of this group.
+        /// Create an option group associated to the given options.
         /// </summary>
-        public string[] OptionGroup { get; }
-        /// <summary>
-        /// If required, one of group options must be used
-        /// Options inside an option group cannot be required -> ConfigurationException
-        /// </summary>
-        public bool Required { get; }
-        /// <summary>
-        /// Dependency of whole option group
-        /// Options inside an option group cannot have dependencies -> ConfigurationException
-        /// </summary>
-        public string UseWith { get; init; }
-
+        /// <param name="required">If required, one of group options must be used. Individual options inside an option group cannot be required.</param>
+        /// <param name="options">Names of properties in the parser that are part of this group.</param>
         public OptionGroupAttribute(
             bool required,
-            params string[] optionGroup
+            params string[] options
             )
         {
-            OptionGroup = optionGroup;
+            this.Options = options;
             Required = required;
         }
+
+        internal string[] Options { get; }
+        internal bool Required { get; }
+
+        /// <summary>
+        /// Dependency of the whole option group -
+        /// Options inside an option group cannot have dependencies.
+        /// </summary>
+        public string UseWith { get; init; }
     }
 
     /// @}

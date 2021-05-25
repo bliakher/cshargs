@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CShargs
 {
@@ -20,7 +16,7 @@ namespace CShargs
         Default = 0,
 
         /// <summary>
-        /// If present, flag options cannot aggregated together. ie "-a -b -c" is NOT equivalent to "-abc"
+        /// If present, flag options cannot aggregated together. ie `-a -b -c` is NOT equivalent to `-abc`
         /// </summary>
         ForbidAggregated = 1 << 0,
 
@@ -61,12 +57,12 @@ namespace CShargs
         ForbidLongSpace = 1 << 7,
 
         /// <summary>
-        /// If present, enum types will be parsed with ignoreCase=true in <see cref="Enum.Parse(Type, string, bool)"/>
+        /// If present, enum types will be parsed with ignoreCase=true in <see cref="Enum.Parse(Type, string, bool)"/>.
         /// </summary>
         EnumCaseInsensitive = 1 << 8,
 
         /// <summary>
-        /// If present, verb options are case insensitive
+        /// If present, verb options are case insensitive.
         /// </summary>
         VerbCaseInsensitive = 1 << 9,
     }

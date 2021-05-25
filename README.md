@@ -1,3 +1,4 @@
+# README
 # 🌊🦈 CShargs argument parser
 
 (Hopefully) easy to use declarative argument parser for C#.
@@ -29,6 +30,8 @@ Run `make docs` to generate reference documentation.
 
 
 # Usage
+
+
 - Create a class that represents arguments of your command (must be child of Parser class)
 - Properties or methods in the class correspond to command options. Annotate them with attributes to specify kinds of options.
 - Parameters of an option are specified in attribute constructor.
@@ -61,7 +64,7 @@ If your parser configuration contains a conflict, `ConfigurationException` is th
 
 # Features
 
-## Flag option ( `--flag` / `-f` )
+## Flag option ( --flag / -f )
 Flag option attribute is used for options without parameters. The type of the property must be bool.
 - For option name, use the first constructor argument `name`
 - For short alias, use the named argument `shortName`
@@ -74,7 +77,7 @@ Flag option attribute is used for options without parameters. The type of the pr
 ```
 
 
-## Value option ( `--key=Value` / `-k Value` / `-kValue` )
+## Value option ( --key=Value / -k Value / -kValue )
 Value option attribute is used for options with parameters. Type of the option property must be either:
   - one of the C# primitives (`int`, `string`, `bool`, `short`, `long`, etc.)
   - an enum. Entries are case sensitive, if LongCaseInsensitive setting is not set.
@@ -112,7 +115,7 @@ class GitPushArguments : Parser {
 }
 ```
 
-## Custom option - TODO - value smt different
+## Custom option
 
 If you need an option that needs some context during its own parsing, or you need to interpret the raw arguments in sligtly different way, you can use the `CustomOption` attribute on a method. 
 The signature of the method should be `void MyMethod(string value)`.

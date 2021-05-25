@@ -71,7 +71,7 @@ namespace CShargs
                 UseWith = optionProperties[groupAttribute.UseWith];
             }
 
-            foreach (var name in attribute_.OptionGroup) {
+            foreach (var name in attribute_.Options) {
                 if (!optionProperties.ContainsKey(name)) {
                     throw new ConfigurationException($"Property name '{name}' not known in group {this}.");
                 }

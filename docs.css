@@ -1,14 +1,34 @@
 ﻿
-div.contents {
+div.contents, div.title {
     max-width: 1024px;
     width: 80%;
     margin: 0 auto;
 }
 
 div.fragment {
-    padding: 5px;
+    padding: 10px;
 }
 
-div.fragment .line {
-    height: 1rem;
+    div.fragment .keyword {
+        color: #10d;
+    }
+    div.fragment .comment {
+        color: #080;
+    }
+    div.fragment span.stringliteral, div.fragment span.charliteral {
+        color: #800;
+    }
+    div.fragment .keyword {
+    }
+
+
+    div .fragment .line {
+        line-height: 1rem;
+    }
+
+p code {
+    background-color: #eee;
+    font-family: monospace;
+    padding: 0px 3px;
+    line-height: 1.0rem;
 }

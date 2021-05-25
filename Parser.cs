@@ -17,6 +17,10 @@ namespace CShargs
     ///
     /// To generate help text for your class, use the <see cref="Parser.GenerateHelp(bool)"/> method.
     /// </summary>
+    /// 
+    /// ## Example
+    /// For full example see \ref TimeExample.cs
+    /// 
     public abstract class Parser
     {
         protected Parser()
@@ -301,6 +305,8 @@ namespace CShargs
             try {
                 option.Parse(this, value, tokens_);
             } catch (FormatException ex) {
+                throw new ValueOptionFormatException(tokens_.Peek(-1), ex);
+            } catch (OverflowException ex) {
                 throw new ValueOptionFormatException(tokens_.Peek(-1), ex);
             }
 
