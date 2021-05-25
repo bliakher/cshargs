@@ -1,4 +1,14 @@
-﻿div.contents
-{
-    background-color: hotpink;
+﻿
+div.contents {
+    max-width: 1024px;
+    width: 80%;
+    margin: 0 auto;
+}
+
+div.fragment {
+    padding: 5px;
+}
+
+div.fragment .line {
+    height: 1rem;
 }
