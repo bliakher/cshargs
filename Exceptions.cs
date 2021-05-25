@@ -6,6 +6,12 @@ using FormatException = System.FormatException;
 namespace CShargs
 {
 
+    /// \addtogroup ConfigurationExceptions
+    /// @brief Exceptions thrown during parser initialization.
+    /// 
+    /// <see cref="ConfigurationException"/> is thrown during parser initialization for parser configuration errors.
+    /// @{
+    
     /// <summary>
     /// Thrown during initialization when there is an error in parser configuration.
     /// </summary>
@@ -21,6 +27,14 @@ namespace CShargs
             }
         }
     }
+    /// @}
+    
+    /// \addtogroup ParsingExceptions
+    /// @brief Exceptions thrown during parsing.
+    /// 
+    /// <see cref="ParsingException"/> is thrown during parsing.
+    /// For details see individual exceptions.
+    /// @{
 
     /// <summary>
     /// Thrown during runtime when there is an error in parsing the given arguments.
@@ -140,4 +154,5 @@ namespace CShargs
         internal PlainArgsCountException(string message, Exception inner = null)
             : base(message, inner) { }
     }
+    /// @}
 }
