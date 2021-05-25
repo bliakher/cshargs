@@ -25,11 +25,9 @@ namespace CShargs
 
         public void LoadAtrributes()
         {
-            if (userType_.IsDefined(typeof(ParserConfigAttribute))) {
-                Config = userType_.GetCustomAttribute<ParserConfigAttribute>();
-            } else {
-                Config = new();
-            }
+            Config = userType_.IsDefined(typeof(ParserConfigAttribute)) ? 
+                userType_.GetCustomAttribute<ParserConfigAttribute>() : 
+                new();
             createOptionsMetadata();
             injectUseWithReferences();
             rules_ = extractRules();
@@ -207,7 +205,7 @@ namespace CShargs
 
         public IEnumerable<GroupRule> GetGroups()
         {
-            return rules_.Where(r => r is GroupRule).Select(r => r as GroupRule);
+            return rules_.OfType<GroupRule>();
         }
     }
 }

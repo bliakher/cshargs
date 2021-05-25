@@ -40,7 +40,7 @@ namespace CShargs
         /// <summary>
         /// Name of the option in question
         /// </summary>
-        public string OptionName { get; private set; }
+        public string OptionName { get;  }
 
         internal OptionException(string optionName, string message, Exception innerException = null)
             : base(message, innerException)

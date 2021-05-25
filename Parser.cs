@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TokenReader = CShargs.ListReader<string>;
 
 namespace CShargs
@@ -17,7 +15,7 @@ namespace CShargs
     /// - Annotate class properties with according <see cref="OptionAttributes"/> attributes.
     /// - Now you can call <see cref="Parser.Parse"/> to parse arguments automatically to your class.
     ///
-    /// To generate help text for your class, use the <see cref="Parser.GenerateHelp"/> method.
+    /// To generate help text for your class, use the <see cref="Parser.GenerateHelp(bool)"/> method.
     /// </summary>
     public abstract class Parser
     {
@@ -162,6 +160,7 @@ namespace CShargs
             }
             checkPlainArgsCount();
             metadata_.CheckRules(parsedOptions_);
+            Parsed = true;
 
         }
 
@@ -390,7 +389,7 @@ namespace CShargs
                         rawHelpText.Add($"When {option} used, this must be also specified.");
                     }
 
-                    int maxLineLength = 60, i = 0;
+                    int maxLineLength = 60, xPos = 0;
                     var words = rawHelpText
                         .SelectMany(s => s.Split(' ', StringSplitOptions.RemoveEmptyEntries))
                         .SelectMany(s => {
@@ -402,18 +401,18 @@ namespace CShargs
 
                     foreach (string word in words) {
 
-                        if (i != 0 && i + word.Trim(' ', '\n').Length + 1> maxLineLength) {
-                            i = 0;
+                        if (xPos != 0 && xPos + word.Trim(' ', '\n').Length + 1> maxLineLength) {
+                            xPos = 0;
                             output.Write(newlinePad);
                         }
 
-                        string space = i == 0 ? "" : " ";
+                        string space = xPos == 0 ? "" : " ";
                         output.Write(space + word);
 
                         if (!word.Contains('\n')) {
-                            i += word.Length + space.Length;
+                            xPos += word.Length + space.Length;
                         } else {
-                            i = 0;
+                            xPos = 0;
                         }
                     }
 

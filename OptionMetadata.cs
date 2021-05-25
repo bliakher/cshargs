@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -89,7 +88,7 @@ namespace CShargs
     internal sealed class ValueOption : OptionMetadata
     {
         public PropertyInfo Property => (PropertyInfo)member_;
-        private Delegate staticParse_ = null;
+        private Delegate staticParse_;
         private new ValueOptionAttribute attribute_ => (ValueOptionAttribute)base.attribute_;
 
         public string MetaVar => attribute_.MetaVar ?? Property.Name.ToUpper();
@@ -99,7 +98,6 @@ namespace CShargs
 
         public override void Parse(Parser parser, string valueStr, TokenReader tokens)
         {
-            // TODO: check parser options
             if (valueStr == null) {
                 if (tokens.EndOfList) {
                     throw new MissingOptionValueException(tokens.Peek(-1));
