@@ -17,3 +17,6 @@ distclean:
 
 docs:
 	doxygen doxygen.conf
+
+test:
+    dotnet test

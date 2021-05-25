@@ -12,6 +12,22 @@ Define a class representing the arguments object. 🌊🦈 will populate this ob
 
 ***
 
+# Build
+
+Before build you will need to install
+- dotnet cli
+- make
+- for generating documentation:
+  - doxygen
+  - graphviz
+  
+Run `make build` to build the library.
+
+Run `make test` to run tests.
+
+Run `make docs` to generate reference documentation.
+
+
 # Usage
 - Create a class that represents arguments of your command (must be child of Parser class)
 - Properties or methods in the class correspond to command options. Annotate them with attributes to specify kinds of options.
