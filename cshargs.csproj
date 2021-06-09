@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<Compile Remove="ExtensionProgram\**" />
+	<None Remove="ExtensionProgram\**" />
     <Compile Remove="Tests-s11\**" />
     <None Remove="Tests-s11\**" />
     <EmbeddedResource Remove="Tests-s11\**" />

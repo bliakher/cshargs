@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests-s11", "Tests-s11\Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s14-api-testing", "Tests-s14\s14-api-testing.csproj", "{ABB41ECD-E17F-4A63-97F4-FFE97DE9E0E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionProgram", "ExtensionProgram\ExtensionProgram.csproj", "{BC07EAE4-5A1D-421F-BB4E-3ACD755FCACC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{ABB41ECD-E17F-4A63-97F4-FFE97DE9E0E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABB41ECD-E17F-4A63-97F4-FFE97DE9E0E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABB41ECD-E17F-4A63-97F4-FFE97DE9E0E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC07EAE4-5A1D-421F-BB4E-3ACD755FCACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC07EAE4-5A1D-421F-BB4E-3ACD755FCACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC07EAE4-5A1D-421F-BB4E-3ACD755FCACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC07EAE4-5A1D-421F-BB4E-3ACD755FCACC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
