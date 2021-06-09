@@ -8,8 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DateTimeParser\**" />
     <Compile Remove="Tests-s11\**" />
+    <None Remove="DateTimeParser\**" />
     <None Remove="Tests-s11\**" />
+    <EmbeddedResource Remove="DateTimeParser\**" />
     <EmbeddedResource Remove="Tests-s11\**" />
     <Compile Remove="Tests-s14\**" />
     <EmbeddedResource Remove="Tests-s14\**" />

@@ -4,6 +4,7 @@ default:
 stages:
   - build
   - test
+  - extension
 
 build:
   stage: build
@@ -22,4 +23,7 @@ test-s11:
   script:
     - 'dotnet test Tests-s11/Tests-s11.csproj'
 
-
+run-extension:
+    stage: extension
+    script:
+        - 'dotnet run --project DateTimeParser/DateTimeParser.csproj --date=2018-12-31T14:45 --format=d.M.'
